@@ -41,6 +41,13 @@ const handleScroll = rafThrottle(() => {
     const scrollY = window.scrollY;
     const docHeight = document.documentElement.scrollHeight - window.innerHeight;
     
+    // Navbar: show after scrolling past the hero section, hide when at top
+    const hero = document.querySelector('.hero');
+    if (hero) {
+        const heroBottom = hero.offsetTop + hero.offsetHeight;
+        navbar.classList.toggle('visible', scrollY > heroBottom - 80);
+    }
+    
     // Navbar background
     navbar.classList.toggle('scrolled', scrollY > 50);
     
@@ -67,6 +74,7 @@ const handleScroll = rafThrottle(() => {
 });
 
 window.addEventListener('scroll', handleScroll, { passive: true });
+handleScroll(); // Initialize navbar state on page load
 
 // ---- Smooth Scroll ----
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {

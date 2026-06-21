@@ -65,6 +65,9 @@ const handleScroll = rafThrottle(() => {
     if (hero) {
         const heroBottom = hero.offsetTop + hero.offsetHeight;
         navbar.classList.toggle('visible', scrollY > heroBottom - 80);
+    } else {
+        // No hero section on this page (e.g. guide, team, resources) — show navbar immediately
+        navbar.classList.add('visible');
     }
     
     // Navbar background

@@ -541,9 +541,11 @@ function initCommitteeRoad() {
 const points = [];
         cards.forEach(card => {
             const r = card.getBoundingClientRect();
-            // Always anchor to the CENTER of every card
-            const x = (r.left + window.scrollX) - (containerRect.left + window.scrollX) + r.width / 2;
-            const y = (r.top + window.scrollY) - containerTop + r.height / 2;
+            const containerLeft = containerRect.left + window.scrollX;
+            // X = center of card relative to container
+            const x = (r.left + window.scrollX) - containerLeft + r.width / 2;
+            // Y = bottom of card so line exits through the bottom naturally
+            const y = (r.top + window.scrollY) - containerTop + r.height - 20;
             points.push({ x, y });
         });
 

@@ -46,46 +46,57 @@ function rafThrottle(fn) {
             });
         }
     };
-}// ---- Navbar Scroll Effect (combined with progress + back-to-top) ----
+}
+
+// ---- Navbar Scroll Effect (combined with progress + back-to-top) ----
 const navbar = document.getElementById('navbar');
 const backToTop = document.getElementById('backToTop');
 const progressBar = document.getElementById('progressBar');
+const heroContent = document.querySelector('.hero-content');
 const sections = document.querySelectorAll('section[id]');
 const navLinks = document.querySelectorAll('.nav-links a');
 
 const handleScroll = rafThrottle(() => {
- const scrollY = window.scrollY;
- const docHeight = document.documentElement.scrollHeight - window.innerHeight;
- 
- // Navbar background — just toggle scrolled state
- if (navbar) {
- navbar.classList.toggle('scrolled', scrollY > 50);
- }
- 
- // Progress bar
- if (progressBar) {
- progressBar.style.width = ((scrollY / docHeight) * 100) + '%';
- }
- 
- // Back to top button
- if (backToTop) {
- backToTop.classList.toggle('show', scrollY > 300);
- }
- 
- // Active nav link
- let current = '';
- for (const section of sections) {
- if (scrollY >= section.offsetTop - 200) {
- current = section.getAttribute('id');
- }
- }
- for (const link of navLinks) {
- link.classList.toggle('active', link.getAttribute('href') === '#' + current);
- }
+    const scrollY = window.scrollY;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    
+    // Navbar: show after scrolling past the hero section, hide when at top
+    const hero = document.querySelector('.hero');
+    if (hero) {
+        const heroBottom = hero.offsetTop + hero.offsetHeight;
+        navbar.classList.toggle('visible', scrollY > heroBottom - 80);
+    } else {
+        // No hero section on this page (e.g. guide, team, resources) — show navbar immediately
+        navbar.classList.add('visible');
+    }
+    
+    // Navbar background
+    navbar.classList.toggle('scrolled', scrollY > 50);
+    
+    // Progress bar
+    if (progressBar) {
+        progressBar.style.width = ((scrollY / docHeight) * 100) + '%';
+    }
+    
+    // Back to top button
+    if (backToTop) {
+        backToTop.classList.toggle('show', scrollY > 300);
+    }
+    
+    // Active nav link
+    let current = '';
+    for (const section of sections) {
+        if (scrollY >= section.offsetTop - 200) {
+            current = section.getAttribute('id');
+        }
+    }
+    for (const link of navLinks) {
+        link.classList.toggle('active', link.getAttribute('href') === '#' + current);
+    }
 });
 
 window.addEventListener('scroll', handleScroll, { passive: true });
-handleScroll(); // Initialize on page load
+handleScroll(); // Initialize navbar state on page load
 
 // ---- Smooth Scroll ----
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -403,4 +414,131 @@ if (!isMobile) {
 }
 
 
+// ==================== HORIZONTAL SCROLLING ROADMAP ==================== 
 
+const roadmapSection = document.querySelector('.committees-roadmap-section');
+const roadmapWrapper = document.getElementById('roadmapWrapper');
+const roadmapTrack = document.getElementById('roadmapTrack');
+const roadmapCards = document.querySelectorAll('.roadmap-card');
+const roadmapProgress = document.getElementById('roadmapProgress');
+const scrollHint = document.getElementById('scrollHint');
+
+if (roadmapSection && roadmapTrack && roadmapCards.length > 0) {
+ const totalCards = roadmapCards.length;
+ 
+ function updateRoadmap() {
+ const sectionTop = roadmapSection.offsetTop;
+ const sectionHeight = roadmapSection.offsetHeight;
+ const scrollY = window.scrollY;
+ 
+ // Calculate scroll progress through the section
+ const scrollProgress = (scrollY - sectionTop) / sectionHeight;
+ const clampedProgress = Math.max(0, Math.min(1, scrollProgress));
+ 
+ // Update progress bar
+ if (roadmapProgress) {
+ roadmapProgress.style.width = (clampedProgress * 100) + '%';
+ }
+ 
+ // Hide scroll hint after first scroll
+ if (scrollHint && clampedProgress > 0.05) {
+ scrollHint.classList.add('hidden');
+ }
+ 
+ // Calculate which card should be active
+ const activeIndex = Math.floor(clampedProgress * totalCards);
+ const clampedIndex = Math.min(activeIndex, totalCards - 1);
+ 
+ // Horizontal scroll distance with HAIRPIN BENDS
+ // Cards 0-2 move left, card 3 turns back right, cards 4-5 move left again
+ let translateX = 0;
+ 
+ if (clampedIndex === 0) {
+ translateX = 0;
+ } else if (clampedIndex === 1) {
+ translateX = -100; // Move left
+ } else if (clampedIndex === 2) {
+ translateX = -200; // Continue left
+ } else if (clampedIndex === 3) {
+ translateX = -150; // HAIRPIN BEND - move back right
+ } else if (clampedIndex === 4) {
+ translateX = -250; // Move left again
+ } else if (clampedIndex === 5) {
+ translateX = -350; // Final position
+ }
+ 
+ roadmapTrack.style.transform = `translateX(${translateX}vw)`;
+ 
+ // Set active card
+ roadmapCards.forEach((card, index) => {
+ if (index === clampedIndex) {
+ card.classList.add('active');
+ } else {
+ card.classList.remove('active');
+ }
+ });
+ }
+ 
+ // Throttled scroll handler
+ const handleRoadmapScroll = rafThrottle(updateRoadmap);
+ window.addEventListener('scroll', handleRoadmapScroll, { passive: true });
+ 
+ // Initialize on load
+ updateRoadmap();
+}
+
+// ---- Committees Road Path Animation ----
+function initCommitteeRoad() {
+    const container = document.getElementById('committeesRoad');
+    const svg = document.getElementById('roadSvg');
+    const path = document.getElementById('roadPath');
+    if (!container || !svg || !path) return;
+    const cards = container.querySelectorAll('.road-card');
+    if (!cards.length) return;
+
+    let pathLength = 0;
+
+    function buildPath() {
+        const containerRect = container.getBoundingClientRect();
+        const containerTop = containerRect.top + window.scrollY;
+        svg.setAttribute('viewBox', `0 0 ${containerRect.width} ${container.offsetHeight}`);
+
+        const points = [];
+        cards.forEach(card => {
+            const r = card.getBoundingClientRect();
+            const x = (r.left + window.scrollX) - (containerRect.left + window.scrollX) + r.width / 2;
+            const y = (r.top + window.scrollY) - containerTop + r.height / 2;
+            points.push({ x, y });
+        });
+
+        let d = `M ${points[0].x} ${points[0].y}`;
+        for (let i = 0; i < points.length - 1; i++) {
+            const p0 = points[i];
+            const p1 = points[i + 1];
+            const midY = (p0.y + p1.y) / 2;
+            d += ` C ${p0.x} ${midY}, ${p1.x} ${midY}, ${p1.x} ${p1.y}`;
+        }
+        path.setAttribute('d', d);
+        pathLength = path.getTotalLength();
+        path.style.strokeDasharray = pathLength;
+        path.style.strokeDashoffset = pathLength;
+    }
+
+    function updateOnScroll() {
+        const rect = container.getBoundingClientRect();
+        const vh = window.innerHeight;
+        const total = rect.height + vh;
+        const scrolled = vh - rect.top;
+        let progress = scrolled / total;
+        progress = Math.max(0, Math.min(1, progress));
+        path.style.strokeDashoffset = pathLength * (1 - progress);
+    }
+
+    buildPath();
+    updateOnScroll();
+
+    window.addEventListener('resize', debounce(() => { buildPath(); updateOnScroll(); }, 200));
+    window.addEventListener('scroll', rafThrottle(updateOnScroll), { passive: true });
+}
+
+window.addEventListener('load', () => setTimeout(initCommitteeRoad, 300));

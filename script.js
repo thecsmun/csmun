@@ -546,7 +546,7 @@ function initCommitteeRoad() {
                 ? (r.right + window.scrollX) - (containerRect.left + window.scrollX) - 20
                 : (r.left + window.scrollX)  - (containerRect.left + window.scrollX) + 20;
             // Anchor to bottom quarter of card so line enters naturally
-            const y = (r.top + window.scrollY) - containerTop + r.height * 0.75;
+            const y = (r.top + window.scrollY) - containerTop + r.height * 0.5;
             points.push({ x, y, isLeft });
         });
 

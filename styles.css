@@ -2699,6 +2699,12 @@ footer p {
     0% { width: 0%; }
     50% { width: 70%; }
     100% { width: 100%; }
+}.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    max-width: 1000px;
+    margin: 0 auto;
 }
 
 
@@ -2721,7 +2727,7 @@ footer p {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 2rem;
-    max-width: 1000px;
+    max-width: 750px;
     margin: 0 auto;
 }
 .stat-card {

@@ -759,22 +759,80 @@ img {
     position: relative;
 }
 
-.committees-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+/* ==================== COMMITTEE TIMELINE ==================== */
+.timeline-wrap {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 4rem;
+    padding: 2rem 0 4rem;
+}
+
+.timeline-svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.timeline-path {
+    fill: none;
+    stroke: var(--gold);
+    stroke-width: 3;
+    filter: drop-shadow(0 0 12px rgba(250, 204, 21, 0.6)) drop-shadow(0 0 30px rgba(250, 204, 21, 0.25));
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.tl-item {
+    display: flex;
+    align-items: center;
     gap: 2rem;
-    perspective: 1200px;
+    position: relative;
+    z-index: 2;
+}
+
+.tl-item.left {
+    flex-direction: row;
+    padding-right: calc(50% + 2rem);
+}
+
+.tl-item.right {
+    flex-direction: row-reverse;
+    padding-left: calc(50% + 2rem);
+}
+
+.tl-marker {
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--gold);
+    box-shadow: 0 0 20px rgba(250, 204, 21, 0.7), 0 0 40px rgba(250, 204, 21, 0.3);
+    position: relative;
+    z-index: 3;
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+
+.tl-item:hover .tl-marker {
+    transform: scale(1.5);
+    box-shadow: 0 0 30px rgba(250, 204, 21, 0.9), 0 0 60px rgba(250, 204, 21, 0.4);
 }
 
 .committee-card {
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid var(--glass-border);
     border-radius: 1.5rem;
-    padding: 2rem;
+    padding: 1.5rem 2rem;
     transition: all var(--transition-normal);
     position: relative;
     overflow: hidden;
+    width: 100%;
 }
+
 .committee-card::before {
     content: '';
     position: absolute;
@@ -831,22 +889,128 @@ img {
     margin-bottom: 0.75rem;
 }
 
+.committee-img-wrap {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 1rem auto;
+    border-radius: 50%;
+    padding: 4px;
+    background: linear-gradient(135deg, var(--gold), rgba(250, 204, 21, 0.2));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.committee-img-wrap::before {
+    content: '';
+    position: absolute;
+    inset: 4px;
+    border-radius: 50%;
+    background: var(--navy);
+    z-index: 0;
+}
+
+.committee-img-wrap::after {
+    content: '';
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--gold);
+    box-shadow: 0 0 15px rgba(250, 204, 21, 0.6);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+}
+
 .committee-img {
-    width: 120px;
-    height: 120px;
+    width: 40px;
+    height: 40px;
     object-fit: cover;
     border-radius: 50%;
-    margin: 0 auto 1.25rem auto;
-    background: rgba(255, 255, 255, 0.05);
-    border: 3px solid rgba(250, 204, 21, 0.3);
     display: block;
-    transition: all var(--transition-normal);
-    transform: translateZ(20px);
+    position: relative;
+    z-index: 1;
 }
+
+.committee-img.spin {
+    animation: orbitLogo 6s linear infinite;
+}
+
+@keyframes orbitLogo {
+    from { transform: rotate(0deg) translateX(30px) rotate(0deg); }
+    to { transform: rotate(360deg) translateX(30px) rotate(-360deg); }
+}
+
+.tl-item.left .committee-card {
+    text-align: left;
+}
+
+.tl-item.right .committee-card {
+    text-align: left;
+}
+
+/* Timeline reveal animation */
+.tl-item {
+    opacity: 0;
+    transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.tl-item.left {
+    transform: translateX(-40px);
+}
+
+.tl-item.right {
+    transform: translateX(40px);
+}
+
+.tl-item.visible {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* Responsive timeline */
+@media (max-width: 768px) {
+    .timeline-wrap {
+        gap: 2.5rem;
+    }
+    .tl-item.left,
+    .tl-item.right {
+        padding: 0 0 0 3rem;
+        flex-direction: row;
+    }
+    .tl-marker {
+        order: -1;
+        flex-shrink: 0;
+    }
+    .committee-card {
+        padding: 1rem 1.25rem;
+    }
+    .committee-card h3 {
+        font-size: 1.5rem;
+    }
+    .committee-img-wrap {
+        width: 70px;
+        height: 70px;
+    }
+    .committee-img {
+        width: 28px;
+        height: 28px;
+    }
+    @keyframes orbitLogoMobile {
+        from { transform: rotate(0deg) translateX(20px) rotate(0deg); }
+        to { transform: rotate(360deg) translateX(20px) rotate(-360deg); }
+    }
+    .committee-img.spin {
+        animation: orbitLogoMobile 6s linear infinite;
+    }
+}
+
 .committee-img:hover {
-    border-color: var(--gold);
-    box-shadow: 0 0 30px rgba(250, 204, 21, 0.5);
-    transform: scale(1.08) translateZ(30px);
+    filter: brightness(1.3) drop-shadow(0 0 15px rgba(250, 204, 21, 0.6));
+    animation-play-state: paused;
 }
 
 /* ==================== SECRETARIAT SECTION ==================== */

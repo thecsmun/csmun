@@ -126,6 +126,11 @@ document.querySelectorAll('.committee-card, .itinerary-card, .secretariat-card, 
     revealObserver.observe(card);
 });
 
+// Timeline items reveal
+document.querySelectorAll('.tl-item').forEach(item => {
+    revealObserver.observe(item);
+});
+
 // ---- Animated Stats Counter ----
 function animateCounter(el) {
     const target = parseInt(el.getAttribute('data-target'));
@@ -488,6 +493,79 @@ if (letterbox) {
     // Activate briefly on page load
     setTimeout(() => letterbox.classList.add('active'), 500);
     setTimeout(() => letterbox.classList.remove('active'), 3000);
+}
+
+// ---- 10. Timeline trailing snake line ----
+function initTimelineLine() {
+    const wrap = document.getElementById('timelineWrap');
+    const path = document.getElementById('timelinePath');
+    if (!wrap || !path) return;
+
+    const items = wrap.querySelectorAll('.tl-item');
+    if (!items.length) return;
+
+    requestAnimationFrame(() => {
+        const wrapRect = wrap.getBoundingClientRect();
+        const centerX = wrapRect.width / 2;
+
+        const points = [];
+        items.forEach(item => {
+            const rect = item.getBoundingClientRect();
+            const y = rect.top - wrapRect.top + rect.height / 2;
+            const isLeft = item.dataset.side === 'left';
+            const card = item.querySelector('.committee-card');
+            if (!card) return;
+            const cardRect = card.getBoundingClientRect();
+            const x = cardRect.left - wrapRect.left + cardRect.width / 2;
+            points.push({ x, y, el: item });
+        });
+
+        if (points.length < 1) return;
+
+        const lastCardRect = items[items.length - 1].querySelector('.committee-card').getBoundingClientRect();
+        const bottomY = lastCardRect.bottom - wrapRect.top + 30;
+
+        // Build snake path: center → card → center → card → ... → bottom
+        let d = `M ${centerX} -10`;
+        let prevY = -10;
+
+        points.forEach((p) => {
+            const mid1 = (prevY + p.y) / 2;
+            d += ` Q ${centerX} ${mid1}, ${centerX} ${mid1}`;
+            d += ` Q ${centerX} ${p.y}, ${p.x} ${p.y}`;
+            const mid2 = p.y;
+            d += ` Q ${p.x} ${mid2}, ${centerX} ${mid2}`;
+            prevY = p.y;
+        });
+
+        d += ` Q ${centerX} ${(prevY + bottomY) / 2}, ${centerX} ${bottomY}`;
+
+        path.setAttribute('d', d);
+
+        const length = path.getTotalLength();
+        path.style.strokeDasharray = length;
+        path.style.strokeDashoffset = length;
+
+        const updateLine = rafThrottle(() => {
+            const rect = wrap.getBoundingClientRect();
+            const vh = window.innerHeight;
+            const total = rect.height + vh;
+            const progress = Math.max(0, Math.min(1, (vh - rect.top) / total));
+            path.style.strokeDashoffset = length * (1 - progress);
+        });
+
+        window.addEventListener('scroll', updateLine, { passive: true });
+        updateLine();
+    });
+}
+
+if (document.getElementById('timelineWrap')) {
+    if (document.readyState === 'complete') {
+        initTimelineLine();
+    } else {
+        window.addEventListener('load', initTimelineLine);
+    }
+    window.addEventListener('resize', debounce(initTimelineLine, 300));
 }
 
 console.log('%c✨ GOATED animations activated — CSMUN 2026 is CINEMATIC ✨', 'font-size:16px;font-weight:bold;color:#facc15;');

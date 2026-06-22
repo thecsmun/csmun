@@ -111,6 +111,19 @@
 
 html {
     scroll-behavior: smooth;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--font-body);
+    background: var(--black);
+    color: var(--white);
+    overflow-x: hidden;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    margin: 0;
+    padding: 0;
 }
 
 body {
@@ -4282,7 +4295,7 @@ body.keyboard-nav *:focus {
 /* Responsive Adjustments */
 @media (max-width: 768px) {
   .announcements-ticker {
-    margin-top: 64px;
+    margin-top: 0;
   }
   
   .ticker-item {

@@ -498,47 +498,54 @@ if (letterbox) {
 // ---- 10. Timeline trailing snake line ----
 function initTimelineLine() {
     const wrap = document.getElementById('timelineWrap');
+    const svg = document.getElementById('timelineSvg');
     const path = document.getElementById('timelinePath');
-    if (!wrap || !path) return;
+    if (!wrap || !svg || !path) return;
 
     const items = wrap.querySelectorAll('.tl-item');
     if (!items.length) return;
 
-    requestAnimationFrame(() => {
+    const doCalc = () => {
         const wrapRect = wrap.getBoundingClientRect();
-        const centerX = wrapRect.width / 2;
+        const w = wrapRect.width;
+        const h = wrapRect.height;
+        if (w === 0 || h === 0) { setTimeout(doCalc, 100); return; }
+
+        svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
+        svg.setAttribute('width', w);
+        svg.setAttribute('height', h);
+
+        const centerX = w / 2;
 
         const points = [];
         items.forEach(item => {
             const rect = item.getBoundingClientRect();
             const y = rect.top - wrapRect.top + rect.height / 2;
-            const isLeft = item.dataset.side === 'left';
             const card = item.querySelector('.committee-card');
             if (!card) return;
             const cardRect = card.getBoundingClientRect();
             const x = cardRect.left - wrapRect.left + cardRect.width / 2;
-            points.push({ x, y, el: item });
+            points.push({ x, y });
         });
 
         if (points.length < 1) return;
 
         const lastCardRect = items[items.length - 1].querySelector('.committee-card').getBoundingClientRect();
-        const bottomY = lastCardRect.bottom - wrapRect.top + 30;
+        const bottomY = lastCardRect.bottom - wrapRect.top + 40;
 
-        // Build snake path: center → card → center → card → ... → bottom
-        let d = `M ${centerX} -10`;
-        let prevY = -10;
+        let d = `M ${centerX} -20`;
+        let prevX = centerX;
+        let prevY = -20;
 
         points.forEach((p) => {
-            const mid1 = (prevY + p.y) / 2;
-            d += ` Q ${centerX} ${mid1}, ${centerX} ${mid1}`;
-            d += ` Q ${centerX} ${p.y}, ${p.x} ${p.y}`;
-            const mid2 = p.y;
-            d += ` Q ${p.x} ${mid2}, ${centerX} ${mid2}`;
+            const cpx = (prevX + p.x) / 2;
+            const cpy = (prevY + p.y) / 2;
+            d += ` Q ${cpx} ${cpy}, ${p.x} ${p.y}`;
+            prevX = p.x;
             prevY = p.y;
         });
 
-        d += ` Q ${centerX} ${(prevY + bottomY) / 2}, ${centerX} ${bottomY}`;
+        d += ` Q ${(prevX + centerX) / 2} ${(prevY + bottomY) / 2}, ${centerX} ${bottomY}`;
 
         path.setAttribute('d', d);
 
@@ -556,16 +563,18 @@ function initTimelineLine() {
 
         window.addEventListener('scroll', updateLine, { passive: true });
         updateLine();
-    });
+    };
+
+    if (document.readyState === 'complete') {
+        setTimeout(doCalc, 200);
+    } else {
+        window.addEventListener('load', () => setTimeout(doCalc, 200));
+    }
 }
 
 if (document.getElementById('timelineWrap')) {
-    if (document.readyState === 'complete') {
-        initTimelineLine();
-    } else {
-        window.addEventListener('load', initTimelineLine);
-    }
-    window.addEventListener('resize', debounce(initTimelineLine, 300));
+    initTimelineLine();
+    window.addEventListener('resize', debounce(initTimelineLine, 400));
 }
 
 console.log('%c✨ GOATED animations activated — CSMUN 2026 is CINEMATIC ✨', 'font-size:16px;font-weight:bold;color:#facc15;');

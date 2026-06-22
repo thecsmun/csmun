@@ -776,13 +776,14 @@ img {
     height: 100%;
     pointer-events: none;
     z-index: 1;
+    overflow: visible;
 }
 
 .timeline-path {
     fill: none;
     stroke: var(--gold);
-    stroke-width: 3;
-    filter: drop-shadow(0 0 12px rgba(250, 204, 21, 0.6)) drop-shadow(0 0 30px rgba(250, 204, 21, 0.25));
+    stroke-width: 4;
+    filter: drop-shadow(0 0 15px rgba(250, 204, 21, 0.8)) drop-shadow(0 0 40px rgba(250, 204, 21, 0.3));
     stroke-linecap: round;
     stroke-linejoin: round;
 }

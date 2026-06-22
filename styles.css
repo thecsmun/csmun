@@ -2985,7 +2985,8 @@ body.scene-3d {
 /* ==================== COMMITTEES ROAD / JOURNEY LAYOUT ==================== */
 .committees-road {
     position: relative;
-    max-width: 900px;
+    max-width: 100%;
+    width: 100%;
     margin: 0 auto;
     padding: 2rem 0;
 }
@@ -3011,8 +3012,8 @@ body.scene-3d {
 .road-card {
     position: relative;
     z-index: 1;
-    max-width: 460px;
-    margin-bottom: 4rem;
+    max-width: 380px;
+    margin-bottom: 6rem;
 }
 .road-card:last-child {
     margin-bottom: 0;

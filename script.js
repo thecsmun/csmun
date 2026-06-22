@@ -380,17 +380,7 @@ function initTypewriter() {
 const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
  || window.innerWidth <= 768;
 
-// ---- CURSOR TRAIL EFFECT ----
-if (!isMobile) {
-    document.addEventListener('mousemove', (e) => {
-        const trail = document.createElement('div');
-        trail.className = 'cursor-trail';
-        trail.style.left = e.clientX + 'px';
-        trail.style.top = e.clientY + 'px';
-        document.body.appendChild(trail);
-        setTimeout(() => trail.remove(), 600);
-    });
-}
+
 
 let currentMouseX = 0, currentMouseY = 0;
 function update3DParallax() {

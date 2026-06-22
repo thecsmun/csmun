@@ -3535,7 +3535,7 @@ body.keyboard-nav *:focus {
   padding: 0.75rem 0;
   overflow: hidden;
   position: relative;
-  margin-top: 72px;
+  margin-top: 0;
 }
 
 .ticker-wrap {

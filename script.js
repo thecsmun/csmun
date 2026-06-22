@@ -109,8 +109,15 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     });
 });
 
-// ---- Countdown Timer with voice on expiry ----
+// ---- Countdown Timer with flip animation on change ----
 const countdownDate = new Date("Jul 2, 2026 09:00:00").getTime();
+
+function triggerCountdownFlip(el) {
+    el.classList.remove('flip');
+    // Force reflow to restart animation
+    void el.offsetWidth;
+    el.classList.add('flip');
+}
 
 function updateCountdown() {
     const now = Date.now();
@@ -127,10 +134,29 @@ function updateCountdown() {
     const minutesEl = document.getElementById("minutes");
     const secondsEl = document.getElementById("seconds");
     if (!daysEl || !hoursEl || !minutesEl || !secondsEl) return;
-    daysEl.textContent = String(Math.floor(distance / 86400000)).padStart(2, '0');
-    hoursEl.textContent = String(Math.floor((distance % 86400000) / 3600000)).padStart(2, '0');
-    minutesEl.textContent = String(Math.floor((distance % 3600000) / 60000)).padStart(2, '0');
-    secondsEl.textContent = String(Math.floor((distance % 60000) / 1000)).padStart(2, '0');
+
+    const newDays = String(Math.floor(distance / 86400000)).padStart(2, '0');
+    const newHours = String(Math.floor((distance % 86400000) / 3600000)).padStart(2, '0');
+    const newMinutes = String(Math.floor((distance % 3600000) / 60000)).padStart(2, '0');
+    const newSeconds = String(Math.floor((distance % 60000) / 1000)).padStart(2, '0');
+
+    // Update and flip if changed
+    if (daysEl.textContent !== newDays) {
+        daysEl.textContent = newDays;
+        triggerCountdownFlip(daysEl);
+    }
+    if (hoursEl.textContent !== newHours) {
+        hoursEl.textContent = newHours;
+        triggerCountdownFlip(hoursEl);
+    }
+    if (minutesEl.textContent !== newMinutes) {
+        minutesEl.textContent = newMinutes;
+        triggerCountdownFlip(minutesEl);
+    }
+    if (secondsEl.textContent !== newSeconds) {
+        secondsEl.textContent = newSeconds;
+        triggerCountdownFlip(secondsEl);
+    }
 }
 
 updateCountdown();

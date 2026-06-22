@@ -732,58 +732,50 @@ if (enterBtn) {
     enterBtn.addEventListener('click', () => unlockAchievement('diplomat'));
 }
 
-// ==================== TESTIMONIALS CAROUSEL SLIDER ====================
+// ==================== TESTIMONIALS SLIDER ====================
 (function() {
-    const slider = document.getElementById('testimonialsSlider');
-    if (!slider) return;
-    const cards = slider.querySelectorAll('.testimonial-card');
-    const dots = document.querySelectorAll('.slider-dot');
-    const prevBtn = document.querySelector('.slider-prev');
-    const nextBtn = document.querySelector('.slider-next');
-    if (!cards.length) return;
-    let current = 0;
-    let autoplayInterval;
-
-    function goTo(index) {
-        cards.forEach(c => c.classList.remove('active'));
-        dots.forEach(d => d.classList.remove('active'));
-        current = (index + cards.length) % cards.length;
-        cards[current].classList.add('active');
-        if (dots[current]) dots[current].classList.add('active');
-        resetAutoplay();
-    }
-
-    function next() { goTo(current + 1); }
-    function prev() { goTo(current - 1); }
-
-    function startAutoplay() {
-        stopAutoplay();
-        autoplayInterval = setInterval(next, 5000);
-    }
-    function stopAutoplay() {
-        if (autoplayInterval) clearInterval(autoplayInterval);
-    }
-    function resetAutoplay() {
-        startAutoplay();
-    }
-
-    if (prevBtn) prevBtn.addEventListener('click', prev);
-    if (nextBtn) nextBtn.addEventListener('click', next);
-    dots.forEach(dot => {
-        dot.addEventListener('click', () => goTo(parseInt(dot.dataset.index)));
+  const track = document.querySelector('.testimonial-track');
+  if (!track) return;
+  
+  const slides = document.querySelectorAll('.testimonial-slide');
+  const dots = document.querySelectorAll('.testimonial-dots .dot');
+  const prevBtn = document.querySelector('.testimonial-prev');
+  const nextBtn = document.querySelector('.testimonial-next');
+  
+  if (!slides.length) return;
+  let currentSlide = 0;
+  const totalSlides = slides.length;
+  
+  function showSlide(index) {
+    slides.forEach(s => s.classList.remove('active'));
+    dots.forEach(d => d.classList.remove('active'));
+    
+    slides[index].classList.add('active');
+    dots[index].classList.add('active');
+  }
+  
+  function nextSlide() {
+    currentSlide = (currentSlide + 1) % totalSlides;
+    showSlide(currentSlide);
+  }
+  
+  function prevSlide() {
+    currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+    showSlide(currentSlide);
+  }
+  
+  if (nextBtn) nextBtn.addEventListener('click', nextSlide);
+  if (prevBtn) prevBtn.addEventListener('click', prevSlide);
+  
+  dots.forEach((dot, index) => {
+    dot.addEventListener('click', () => {
+      currentSlide = index;
+      showSlide(currentSlide);
     });
-
-    // Pause on hover
-    slider.addEventListener('mouseenter', stopAutoplay);
-    slider.addEventListener('mouseleave', startAutoplay);
-
-    // Keyboard navigation
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'ArrowLeft' && slider.matches(':hover')) prev();
-        if (e.key === 'ArrowRight' && slider.matches(':hover')) next();
-    });
-
-    startAutoplay();
+  });
+  
+  // Auto-advance every 6 seconds
+  setInterval(nextSlide, 6000);
 })();
 
 // ==================== LAZY LOADING IMAGES WITH BLUR-UP ====================

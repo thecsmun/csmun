@@ -504,36 +504,36 @@ function initCommitteeRoad() {
         const H = container.offsetHeight;
 
         svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+        svg.style.width = '100%';
+        svg.style.height = H + 'px';
 
-        // Add gradient and glow defs
         let defs = svg.querySelector('defs');
         if (!defs) {
             defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
             defs.innerHTML = `
                 <linearGradient id="roadGradient" x1="0%" y1="0%" x2="0%" y2="100%">
                     <stop offset="0%"   stop-color="#ffe066" stop-opacity="1"/>
-                    <stop offset="40%"  stop-color="#facc15" stop-opacity="1"/>
-                    <stop offset="100%" stop-color="#e6b800" stop-opacity="0.7"/>
+                    <stop offset="50%"  stop-color="#facc15" stop-opacity="1"/>
+                    <stop offset="100%" stop-color="#e6b800" stop-opacity="0.8"/>
                 </linearGradient>
-                <filter id="roadGlow">
-                    <feGaussianBlur stdDeviation="4" result="blur"/>
+                <filter id="roadGlowFilter" x="-50%" y="-50%" width="200%" height="200%">
+                    <feGaussianBlur stdDeviation="6" result="blur"/>
                     <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
                 </filter>
             `;
             svg.insertBefore(defs, svg.firstChild);
         }
 
-        // Add a blurred glow path behind the main path
         let glowPath = svg.querySelector('#roadGlow-path');
         if (!glowPath) {
             glowPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
             glowPath.setAttribute('id', 'roadGlow-path');
             glowPath.setAttribute('fill', 'none');
             glowPath.setAttribute('stroke', '#facc15');
-            glowPath.setAttribute('stroke-width', '10');
+            glowPath.setAttribute('stroke-width', '12');
             glowPath.setAttribute('stroke-linecap', 'round');
-            glowPath.setAttribute('opacity', '0.25');
-            glowPath.setAttribute('filter', 'url(#roadGlow)');
+            glowPath.setAttribute('opacity', '0.2');
+            glowPath.setAttribute('filter', 'url(#roadGlowFilter)');
             svg.insertBefore(glowPath, path);
         }
 
@@ -545,24 +545,23 @@ function initCommitteeRoad() {
             points.push({ x, y });
         });
 
-        // Build deep S-curves — control points swing far past center for dramatic bends
         let d = `M ${points[0].x} ${points[0].y}`;
         for (let i = 0; i < points.length - 1; i++) {
             const p0 = points[i];
             const p1 = points[i + 1];
             const dy = p1.y - p0.y;
-            // Swing control points to the OPPOSITE side of each card for a deep S
-            const swing = W * 0.72;
-            const cp1x = p0.x < W / 2 ? p0.x + swing : p0.x - swing;
-            const cp1y = p0.y + dy * 0.35;
-            const cp2x = p1.x < W / 2 ? p1.x + swing : p1.x - swing;
-            const cp2y = p1.y - dy * 0.35;
+            const farLeft  = W * 0.08;
+            const farRight = W * 0.92;
+            const cp1x = p0.x < W / 2 ? farRight : farLeft;
+            const cp1y = p0.y + dy * 0.4;
+            const cp2x = p1.x < W / 2 ? farRight : farLeft;
+            const cp2y = p1.y - dy * 0.4;
             d += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${p1.x} ${p1.y}`;
         }
 
         path.setAttribute('d', d);
         path.setAttribute('stroke', 'url(#roadGradient)');
-        path.setAttribute('filter', 'url(#roadGlow)');
+        path.setAttribute('filter', 'url(#roadGlowFilter)');
         glowPath.setAttribute('d', d);
 
         pathLength = path.getTotalLength();

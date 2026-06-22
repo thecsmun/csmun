@@ -6,7 +6,7 @@ console.log('%c🐛 Found something broken? Congrats — you\'re now QA. Fix it 
 
 
 
-// ---- 3D TILT CARDS ----
+// ---- 3D TILT CARDS + MOUSE TRACKING GLOW ----
 document.querySelectorAll('.committee-card, .stat-card').forEach(card => {
     card.addEventListener('mousemove', (e) => {
         const rect = card.getBoundingClientRect();
@@ -18,6 +18,8 @@ document.querySelectorAll('.committee-card, .stat-card').forEach(card => {
         const rotateY = ((x - centerX) / centerX) * 10;
         card.style.setProperty('--rotate-x', `${rotateX}deg`);
         card.style.setProperty('--rotate-y', `${rotateY}deg`);
+        card.style.setProperty('--mouse-x', `${(x / rect.width) * 100}%`);
+        card.style.setProperty('--mouse-y', `${(y / rect.height) * 100}%`);
     });
     card.addEventListener('mouseleave', () => {
         card.style.setProperty('--rotate-x', '0deg');
@@ -182,16 +184,16 @@ document.querySelectorAll('.committee-card, .itinerary-card, .secretariat-card, 
     revealObserver.observe(card);
 });
 
-// ---- Animated Stats Counter ----
+// ---- Animated Stats Counter (Enhanced with easeOutExpo) ----
 function animateCounter(el) {
     const target = parseInt(el.getAttribute('data-target'));
-    const duration = 1500;
+    const duration = 2000;
     const start = performance.now();
     
     function update(now) {
         const elapsed = now - start;
         const progress = Math.min(elapsed / duration, 1);
-        const eased = 1 - Math.pow(1 - progress, 3); // easeOutCubic
+        const eased = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
         el.textContent = Math.round(eased * target);
         if (progress < 1) requestAnimationFrame(update);
         else el.textContent = target;
@@ -280,6 +282,19 @@ document.querySelectorAll('.btn-primary, .btn-secondary').forEach(btn => {
         ripple.style.cssText = `position:absolute;border-radius:50%;background:rgba(255,255,255,0.3);transform:scale(0);animation:rippleAnim 0.6s ease-out;pointer-events:none;width:100px;height:100px;left:${e.clientX - rect.left - 50}px;top:${e.clientY - rect.top - 50}px;`;
         this.appendChild(ripple);
         setTimeout(() => ripple.remove(), 600);
+    });
+});
+
+// ---- MAGNETIC BUTTON EFFECT ----
+document.querySelectorAll('.btn-primary, .btn-secondary, .btn-download').forEach(btn => {
+    btn.addEventListener('mousemove', (e) => {
+        const rect = btn.getBoundingClientRect();
+        const x = e.clientX - rect.left - rect.width / 2;
+        const y = e.clientY - rect.top - rect.height / 2;
+        btn.style.transform = `translate(${x * 0.3}px, ${y * 0.3}px) scale(1.05)`;
+    });
+    btn.addEventListener('mouseleave', () => {
+        btn.style.removeProperty('transform');
     });
 });
 
@@ -628,3 +643,166 @@ const points = [];
 }
 
 window.addEventListener('load', () => setTimeout(initCommitteeRoad, 300));
+
+// ==================== TOAST NOTIFICATION SYSTEM ====================
+function showToast(message, type = 'info') {
+    const existing = document.querySelector('.toast');
+    if (existing) existing.remove();
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
+    toast.innerHTML = `
+        <div class="toast-icon">${type === 'success' ? '✓' : 'ℹ'}</div>
+        <div class="toast-message">${message}</div>
+    `;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.classList.add('show'), 100);
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 300);
+    }, 4000);
+}
+
+// ==================== PAGE TRANSITION EFFECT ====================
+document.querySelectorAll('a:not([target="_blank"])').forEach(link => {
+    link.addEventListener('click', function(e) {
+        const href = this.getAttribute('href');
+        if (href && !href.startsWith('#') && !href.startsWith('mailto:') && !href.startsWith('tel:')) {
+            e.preventDefault();
+            const overlay = document.createElement('div');
+            overlay.className = 'page-transition active';
+            document.body.appendChild(overlay);
+            setTimeout(() => { window.location.href = href; }, 500);
+        }
+    });
+});
+
+// ==================== TOUCH SWIPE GESTURES ====================
+let touchStartX = 0;
+document.addEventListener('touchstart', e => {
+    touchStartX = e.changedTouches[0].screenX;
+});
+document.addEventListener('touchend', e => {
+    const touchEndX = e.changedTouches[0].screenX;
+    if (touchEndX < touchStartX - 50) {
+        document.dispatchEvent(new CustomEvent('swipeleft'));
+    }
+    if (touchEndX > touchStartX + 50) {
+        document.dispatchEvent(new CustomEvent('swiperight'));
+    }
+});
+
+// ==================== KEYBOARD NAVIGATION ACCESSIBILITY ====================
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Tab') document.body.classList.add('keyboard-nav');
+});
+document.addEventListener('mousedown', () => {
+    document.body.classList.remove('keyboard-nav');
+});
+
+// ==================== ACHIEVEMENT SYSTEM + KONAMI CODE ====================
+const achievements = {
+    night_owl: { unlocked: false, name: 'Night Owl', desc: 'Visited at 2 AM' },
+    explorer: { unlocked: false, name: 'Explorer', desc: 'Visited all pages' },
+    konami: { unlocked: false, name: 'Konami Code', desc: 'Found the secret' },
+    diplomat: { unlocked: false, name: 'Diplomat', desc: 'Clicked the enter button' },
+};
+function unlockAchievement(key) {
+    if (achievements[key] && !achievements[key].unlocked) {
+        achievements[key].unlocked = true;
+        showToast(`🏆 Achievement Unlocked: ${achievements[key].name}`, 'success');
+    }
+}
+if (new Date().getHours() === 2) unlockAchievement('night_owl');
+const konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+let konamiIndex = 0;
+document.addEventListener('keydown', (e) => {
+    if (e.key === konamiCode[konamiIndex]) {
+        konamiIndex++;
+        if (konamiIndex === konamiCode.length) {
+            unlockAchievement('konami');
+            konamiIndex = 0;
+            showToast('🎮 KONAMI CODE ACTIVATED!', 'info');
+        }
+    } else {
+        konamiIndex = 0;
+    }
+});
+const enterBtn = document.querySelector('.intro-enter');
+if (enterBtn) {
+    enterBtn.addEventListener('click', () => unlockAchievement('diplomat'));
+}
+
+// ==================== TESTIMONIALS CAROUSEL SLIDER ====================
+(function() {
+    const slider = document.getElementById('testimonialsSlider');
+    if (!slider) return;
+    const cards = slider.querySelectorAll('.testimonial-card');
+    const dots = document.querySelectorAll('.slider-dot');
+    const prevBtn = document.querySelector('.slider-prev');
+    const nextBtn = document.querySelector('.slider-next');
+    if (!cards.length) return;
+    let current = 0;
+    let autoplayInterval;
+
+    function goTo(index) {
+        cards.forEach(c => c.classList.remove('active'));
+        dots.forEach(d => d.classList.remove('active'));
+        current = (index + cards.length) % cards.length;
+        cards[current].classList.add('active');
+        if (dots[current]) dots[current].classList.add('active');
+        resetAutoplay();
+    }
+
+    function next() { goTo(current + 1); }
+    function prev() { goTo(current - 1); }
+
+    function startAutoplay() {
+        stopAutoplay();
+        autoplayInterval = setInterval(next, 5000);
+    }
+    function stopAutoplay() {
+        if (autoplayInterval) clearInterval(autoplayInterval);
+    }
+    function resetAutoplay() {
+        startAutoplay();
+    }
+
+    if (prevBtn) prevBtn.addEventListener('click', prev);
+    if (nextBtn) nextBtn.addEventListener('click', next);
+    dots.forEach(dot => {
+        dot.addEventListener('click', () => goTo(parseInt(dot.dataset.index)));
+    });
+
+    // Pause on hover
+    slider.addEventListener('mouseenter', stopAutoplay);
+    slider.addEventListener('mouseleave', startAutoplay);
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowLeft' && slider.matches(':hover')) prev();
+        if (e.key === 'ArrowRight' && slider.matches(':hover')) next();
+    });
+
+    startAutoplay();
+})();
+
+// ==================== LAZY LOADING IMAGES WITH BLUR-UP ====================
+(function() {
+    const lazyImages = document.querySelectorAll('.lazy-image');
+    if (!lazyImages.length) return;
+    const imageObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const img = entry.target;
+                const src = img.getAttribute('data-src');
+                if (src) {
+                    img.src = src;
+                    img.removeAttribute('data-src');
+                }
+                img.classList.add('loaded');
+                imageObserver.unobserve(img);
+            }
+        });
+    }, { rootMargin: '200px 0px' });
+    lazyImages.forEach(img => imageObserver.observe(img));
+})();

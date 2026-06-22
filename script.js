@@ -545,17 +545,19 @@ function initCommitteeRoad() {
             points.push({ x, y });
         });
 
-        // Build a smooth S-curve path with big sweeping bends between each card
+        // Build a smooth S-curve with wide sweeping bends between each card
         let d = `M ${points[0].x} ${points[0].y}`;
         for (let i = 0; i < points.length - 1; i++) {
             const p0 = points[i];
             const p1 = points[i + 1];
             const dy = p1.y - p0.y;
-            // Control points: pull strongly outward toward the opposite side for a wide S
-            const cp1x = p0.x;
-            const cp1y = p0.y + dy * 0.45;
-            const cp2x = p1.x;
-            const cp2y = p1.y - dy * 0.45;
+            const midY = p0.y + dy * 0.5;
+            // Pull control points far to the CENTER horizontally to create a wide S-bend
+            const centerX = W / 2;
+            const cp1x = centerX;
+            const cp1y = p0.y + dy * 0.25;
+            const cp2x = centerX;
+            const cp2y = p0.y + dy * 0.75;
             d += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${p1.x} ${p1.y}`;
         }
 

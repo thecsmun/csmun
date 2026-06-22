@@ -1,0 +1,17 @@
+name: CI
+
+on:
+  push:
+    branches: [ "**" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: List files
+        run: ls -la
+      - name: Show commit info
+        run: echo "Commit ${{ github.sha }} by ${{ github.actor }} on ${{ github.ref_name }}"

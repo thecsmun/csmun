@@ -546,10 +546,48 @@ function initCommitteeRoad() {
     let pathLength = 0;
 
     function buildPath() {
-        const containerRect = container.getBoundingClientRect();
-        const containerTop = containerRect.top + window.scrollY;
-        const W = containerRect.width;
+        const W = container.offsetWidth;
         const H = container.offsetHeight;
+
+        svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+        svg.style.width = '100%';
+        svg.style.height = H + 'px';
+
+        let defs = svg.querySelector('defs');
+        if (!defs) {
+            defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+            svg.insertBefore(defs, svg.firstChild);
+        }
+
+        // Simple S-curve: left side to right side, repeating
+        const cardCount = cards.length;
+        const segH = H / cardCount;
+        let d = `M ${W * 0.25} 0`;
+        for (let i = 0; i < cardCount; i++) {
+            const y1 = segH * i + segH * 0.5;
+            const y2 = segH * (i + 1);
+            const fromX = i % 2 === 0 ? W * 0.25 : W * 0.75;
+            const toX = i % 2 === 0 ? W * 0.75 : W * 0.25;
+            d += ` C ${fromX} ${y1}, ${toX} ${y1}, ${toX} ${y2}`;
+        }
+
+        const allPaths = ['roadPath', 'roadPathEdge', 'roadPathLeft', 'roadPathRight', 'roadPathDash'];
+        allPaths.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.setAttribute('d', d);
+        });
+
+        const glowPath = document.getElementById('roadGlow-path');
+        if (glowPath) glowPath.setAttribute('d', d);
+
+        pathLength = document.getElementById('roadPath').getTotalLength();
+        document.getElementById('roadPath').style.strokeDasharray = pathLength;
+        document.getElementById('roadPath').style.strokeDashoffset = pathLength;
+        if (glowPath) {
+            glowPath.style.strokeDasharray = pathLength;
+            glowPath.style.strokeDashoffset = pathLength;
+        }
+    }
 
 svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
         svg.setAttribute('preserveAspectRatio', 'none');

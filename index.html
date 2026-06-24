@@ -679,6 +679,7 @@
      // Load GLB model
      const loader = new THREE.GLTFLoader();
      let model;
+     let pivot;
 
      loader.load(
      'logo.glb',
@@ -713,17 +714,23 @@
      }
      });
 
-     // Center and scale model
+     // 1. Create a Pivot Group
+     pivot = new THREE.Group();
+     scene.add(pivot);
+
+     // 2. Calculate the original bounding box
      const box = new THREE.Box3().setFromObject(model);
      const center = box.getCenter(new THREE.Vector3());
-     model.position.sub(center);
-     
      const size = box.getSize(new THREE.Vector3());
+
+     // 3. Center the raw model against itself
+     model.position.set(-center.x, -center.y, -center.z);
+     pivot.add(model);
+
+     // 4. Scale the PIVOT, not the model
      const maxDim = Math.max(size.x, size.y, size.z);
      const scale = 3 / maxDim;
-     model.scale.setScalar(scale);
-
-     scene.add(model);
+     pivot.scale.setScalar(scale);
      
      console.log('✅ GLB Model loaded successfully with GOLD material');
      },
@@ -743,13 +750,10 @@
      requestAnimationFrame(animate);
      time += 0.01;
 
-     if (model) {
-     // Slow rotation like Earth (Y-axis primary)
-     model.rotation.y += 0.005;
-     model.rotation.x = Math.sin(time * 0.3) * 0.05; // Subtle tilt wobble
-     
-     // Gentle floating animation
-     model.position.y = Math.sin(time * 0.5) * 0.08;
+     if (pivot) {
+     pivot.rotation.y += 0.005;
+     pivot.rotation.x = Math.sin(time * 0.3) * 0.05; 
+     pivot.position.y = Math.sin(time * 0.5) * 0.08;
      }
 
      // Animate lights for shimmer effect

@@ -551,8 +551,8 @@ function initCommitteeRoad() {
  svg.style.width = '100%';
  svg.style.height = totalHeight + 'px';
 
- const leftX = W * 0.47;
- const rightX = W * 0.53;
+ const leftX = W * 0.38;
+ const rightX = W * 0.62;
 
  // Road enters from top-right, just like image 2
  let d = `M ${rightX} 0`;
@@ -564,28 +564,27 @@ function initCommitteeRoad() {
 
  card.style.position = 'absolute';
  card.style.top = yPos + 'px';
- card.style.width = '42%';
- card.style.maxWidth = '520px';
+ card.style.width = '36%';
+ card.style.maxWidth = '480px';
 
  if (i % 2 === 0) {
- card.style.left = '0%';
+ card.style.left = '0px';
  card.style.right = 'auto';
  } else {
- card.style.right = '0%';
+ card.style.right = '0px';
  card.style.left = 'auto';
  }
 
  if (i === 0) {
- // First segment: comes nearly straight down from top-right
- // then ONE wide sweep left to first card — exactly like image 2
- d += ` C ${rightX} ${currY * 0.55}, ${rightX} ${currY * 0.8}, ${currX} ${currY}`;
+ // Comes straight down from top-right, wide smooth arc to left — like image 2
+ d += ` C ${rightX} ${currY * 0.7}, ${leftX + (rightX - leftX) * 0.3} ${currY * 0.95}, ${currX} ${currY}`;
  } else {
  const prevX = (i - 1) % 2 === 0 ? leftX : rightX;
  const prevY = 80 + ((i - 1) * cardHeight) + 180;
+ const midY = prevY + (currY - prevY) * 0.5;
 
- // Each segment: road goes nearly straight down on its side
- // then ONE tight sweep across — pure highway bend, no S-curve
- d += ` C ${prevX} ${prevY + (currY - prevY) * 0.9}, ${currX} ${prevY + (currY - prevY) * 0.9}, ${currX} ${currY}`;
+ // Road stays on its side, then ONE wide sweeping arc across center
+ d += ` C ${prevX} ${prevY + (currY - prevY) * 0.8}, ${currX} ${midY}, ${currX} ${currY}`;
  }
  });
 

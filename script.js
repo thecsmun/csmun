@@ -550,16 +550,11 @@ function initCommitteeRoad() {
         const H = container.offsetHeight;
 
         svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+        svg.setAttribute('preserveAspectRatio', 'none');
         svg.style.width = '100%';
         svg.style.height = H + 'px';
+        svg.style.overflow = 'hidden';
 
-        let defs = svg.querySelector('defs');
-        if (!defs) {
-            defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
-            svg.insertBefore(defs, svg.firstChild);
-        }
-
-        // Simple S-curve: left side to right side, repeating
         const cardCount = cards.length;
         const segH = H / cardCount;
         let d = `M ${W * 0.25} 0`;
@@ -577,139 +572,29 @@ function initCommitteeRoad() {
             if (el) el.setAttribute('d', d);
         });
 
-        const glowPath = document.getElementById('roadGlow-path');
-        if (glowPath) glowPath.setAttribute('d', d);
-
-        pathLength = document.getElementById('roadPath').getTotalLength();
-        document.getElementById('roadPath').style.strokeDasharray = pathLength;
-        document.getElementById('roadPath').style.strokeDashoffset = pathLength;
-        if (glowPath) {
-            glowPath.style.strokeDasharray = pathLength;
-            glowPath.style.strokeDashoffset = pathLength;
-        }
-    }
-
-svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
-        svg.setAttribute('preserveAspectRatio', 'none');
-        svg.style.width = '100%';
-        svg.style.height = H + 'px';
-        svg.style.overflow = 'hidden';
-
-        let defs = svg.querySelector('defs');
-        if (!defs) {
-            defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
-            defs.innerHTML = `
-                <linearGradient id="roadGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%"   stop-color="#ffe066" stop-opacity="1"/>
-                    <stop offset="50%"  stop-color="#facc15" stop-opacity="1"/>
-                    <stop offset="100%" stop-color="#e6b800" stop-opacity="0.8"/>
-                </linearGradient>
-                <filter id="roadGlowFilter" x="-50%" y="-50%" width="200%" height="200%">
-                    <feGaussianBlur stdDeviation="6" result="blur"/>
-                    <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-                </filter>
-            `;
-            svg.insertBefore(defs, svg.firstChild);
-        }
-
-        let glowPath = svg.querySelector('#roadGlow-path');
-        if (!glowPath) {
-            glowPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-            glowPath.setAttribute('id', 'roadGlow-path');
-            glowPath.setAttribute('fill', 'none');
-            glowPath.setAttribute('stroke', '#facc15');
-            glowPath.setAttribute('stroke-width', '12');
-            glowPath.setAttribute('stroke-linecap', 'round');
-            glowPath.setAttribute('opacity', '0.2');
-            glowPath.setAttribute('filter', 'url(#roadGlowFilter)');
-            svg.insertBefore(glowPath, path);
-        }
-
-        
-const points = [];
-        cards.forEach(card => {
-            const r = card.getBoundingClientRect();
-            const containerLeft = containerRect.left + window.scrollX;
-            const x = (r.left + window.scrollX) - containerLeft + r.width / 2;
-            const y = (r.top + window.scrollY) - containerTop + r.height / 2;
-            // Clamp x so road stays within container
-            const clampedX = Math.max(50, Math.min(W - 50, x));
-            points.push({ x: clampedX, y });
-        });
-
-        // Catmull-Rom to Bezier — physically cannot make sharp bounces
-        function catmullToBezier(p0, p1, p2, p3) {
-            const tension = 0.5;
-            return {
-                cp1x: p1.x + (p2.x - p0.x) * tension / 3,
-                cp1y: p1.y + (p2.y - p0.y) * tension / 3,
-                cp2x: p2.x - (p3.x - p1.x) * tension / 3,
-                cp2y: p2.y - (p3.y - p1.y) * tension / 3,
-            };
-        }
-
-        let d = `M ${points[0].x} ${points[0].y}`;
-        for (let i = 0; i < points.length - 1; i++) {
-            const p0 = i === 0
-                ? { x: points[0].x - (points[1].x - points[0].x), y: points[0].y - (points[1].y - points[0].y) }
-                : points[i - 1];
-            const p1 = points[i];
-            const p2 = points[i + 1];
-            const p3 = i + 2 >= points.length
-                ? { x: points[points.length-1].x + (points[points.length-1].x - points[points.length-2].x),
-                    y: points[points.length-1].y + (points[points.length-1].y - points[points.length-2].y) }
-                : points[i + 2];
-            const { cp1x, cp1y, cp2x, cp2y } = catmullToBezier(p0, p1, p2, p3);
-            d += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${p2.x} ${p2.y}`;
-        }
-
-        path.setAttribute('d', d);
-path.removeAttribute('filter');
-
-const edgePath = svg.querySelector('#roadPathEdge');
-if (edgePath) edgePath.setAttribute('d', d);
-
-const dashPath = svg.querySelector('#roadPathDash');
-if (dashPath) dashPath.setAttribute('d', d);
-
-const leftLine = svg.querySelector('#roadPathLeft');
-if (leftLine) leftLine.setAttribute('d', d);
-
-const rightLine = svg.querySelector('#roadPathRight');
-if (rightLine) rightLine.setAttribute('d', d);
-
-glowPath.setAttribute('d', d);
-
         pathLength = path.getTotalLength();
         path.style.strokeDasharray = pathLength;
         path.style.strokeDashoffset = pathLength;
-        glowPath.style.strokeDasharray = pathLength;
-        glowPath.style.strokeDashoffset = pathLength;
     }
 
     function updateOnScroll() {
         const rect = container.getBoundingClientRect();
         const vh = window.innerHeight;
-        // Start drawing when top of container hits bottom of viewport
-        // Finish drawing when bottom of container hits top of viewport
         const start = vh - rect.top;
         const total = rect.height + vh;
         let progress = start / total;
         progress = Math.max(0, Math.min(1, progress));
-        // Remap so drawing starts at 0.05 and finishes at 0.95 of scroll
-        const remapped = Math.max(0, Math.min(1, (progress - 0.05) / 0.9));
+        const remapped = Math.max(0, Math.min(1, progress / 0.95));
         const offset = pathLength * (1 - remapped);
         path.style.strokeDashoffset = offset;
-        const glowPath = document.getElementById('roadGlow-path');
-        if (glowPath) glowPath.style.strokeDashoffset = offset;
     }
 
     buildPath();
     updateOnScroll();
 
- window.addEventListener('resize', debounce(() => { buildPath(); updateOnScroll(); }, 200));
+    window.addEventListener('resize', debounce(() => { buildPath(); updateOnScroll(); }, 200));
     window.addEventListener('scroll', rafThrottle(updateOnScroll), { passive: true });
-
+}
 
 window.addEventListener('load', () => setTimeout(initCommitteeRoad, 300));
 

@@ -540,6 +540,7 @@ function initCommitteeRoad() {
     const svg = document.getElementById('roadSvg');
     const path = document.getElementById('roadPath');
     if (!container || !svg || !path) return;
+
     const cards = container.querySelectorAll('.road-card');
     if (!cards.length) return;
 
@@ -557,7 +558,34 @@ function initCommitteeRoad() {
 
         const cardCount = cards.length;
         const segH = H / cardCount;
+
         let d = `M ${W * 0.25} 0`;
+
+        // Position cards along the path (only on desktop)
+        const isMobile = window.innerWidth <= 768;
+        cards.forEach((card, i) => {
+            if (isMobile) {
+                // On mobile, restore normal flow stacking
+                card.style.position = '';
+                card.style.top = '';
+                card.style.left = '';
+                card.style.right = '';
+            } else {
+                // Position the card at the calculated coordinates
+                card.style.position = 'absolute';
+                card.style.top = (segH * i) + 'px';
+
+                if (i % 2 === 0) {
+                    card.style.left = '0';
+                    card.style.right = 'auto';
+                } else {
+                    card.style.right = '0';
+                    card.style.left = 'auto';
+                }
+            }
+        });
+
+        // Draw the path connecting all positions
         for (let i = 0; i < cardCount; i++) {
             const y1 = segH * i + segH * 0.5;
             const y2 = segH * (i + 1);

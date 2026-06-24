@@ -3334,6 +3334,7 @@ body.scene-3d {
     margin: 0 auto;
     padding: 2rem 0;
     overflow: hidden;
+    min-height: 300vh; /* Make it tall enough for all cards */
 }
 .road-svg {
     position: absolute;
@@ -3381,14 +3382,6 @@ body.scene-3d {
 }
 .road-card:last-child {
     margin-bottom: 0;
-}
-.road-left {
-    margin-right: auto;
-    margin-left: 0;
-}
-.road-right {
-    margin-left: auto;
-    margin-right: 0;
 }
 @media (max-width: 768px) {
     .road-svg {

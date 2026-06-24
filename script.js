@@ -6,20 +6,27 @@ console.log('%c🐛 Found something broken? Congrats — you\'re now QA. Fix it 
 
 
 
-// ---- 3D TILT CARDS + MOUSE TRACKING GLOW ----
+// ---- 3D TILT CARDS + MOUSE TRACKING GLOW (RAF-throttled) ----
 document.querySelectorAll('.committee-card, .stat-card').forEach(card => {
+    let ticking = false;
     card.addEventListener('mousemove', (e) => {
-        const rect = card.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        const centerX = rect.width / 2;
-        const centerY = rect.height / 2;
-        const rotateX = ((y - centerY) / centerY) * -10;
-        const rotateY = ((x - centerX) / centerX) * 10;
-        card.style.setProperty('--rotate-x', `${rotateX}deg`);
-        card.style.setProperty('--rotate-y', `${rotateY}deg`);
-        card.style.setProperty('--mouse-x', `${(x / rect.width) * 100}%`);
-        card.style.setProperty('--mouse-y', `${(y / rect.height) * 100}%`);
+        if (!ticking) {
+            ticking = true;
+            requestAnimationFrame(() => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                const rotateX = ((y - centerY) / centerY) * -10;
+                const rotateY = ((x - centerX) / centerX) * 10;
+                card.style.setProperty('--rotate-x', `${rotateX}deg`);
+                card.style.setProperty('--rotate-y', `${rotateY}deg`);
+                card.style.setProperty('--mouse-x', `${(x / rect.width) * 100}%`);
+                card.style.setProperty('--mouse-y', `${(y / rect.height) * 100}%`);
+                ticking = false;
+            });
+        }
     });
     card.addEventListener('mouseleave', () => {
         card.style.setProperty('--rotate-x', '0deg');
@@ -285,13 +292,20 @@ document.querySelectorAll('.btn-primary, .btn-secondary').forEach(btn => {
     });
 });
 
-// ---- MAGNETIC BUTTON EFFECT ----
+// ---- MAGNETIC BUTTON EFFECT (RAF-throttled) ----
 document.querySelectorAll('.btn-primary, .btn-secondary, .btn-download').forEach(btn => {
+    let ticking = false;
     btn.addEventListener('mousemove', (e) => {
-        const rect = btn.getBoundingClientRect();
-        const x = e.clientX - rect.left - rect.width / 2;
-        const y = e.clientY - rect.top - rect.height / 2;
-        btn.style.transform = `translate(${x * 0.3}px, ${y * 0.3}px) scale(1.05)`;
+        if (!ticking) {
+            ticking = true;
+            requestAnimationFrame(() => {
+                const rect = btn.getBoundingClientRect();
+                const x = e.clientX - rect.left - rect.width / 2;
+                const y = e.clientY - rect.top - rect.height / 2;
+                btn.style.transform = `translate(${x * 0.3}px, ${y * 0.3}px) scale(1.05)`;
+                ticking = false;
+            });
+        }
     });
     btn.addEventListener('mouseleave', () => {
         btn.style.removeProperty('transform');

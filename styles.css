@@ -113,6 +113,7 @@ html {
     scroll-behavior: smooth;
     margin: 0;
     padding: 0;
+    overflow-x: hidden;
 }
 
 body {
@@ -120,19 +121,11 @@ body {
     background: var(--black);
     color: var(--white);
     overflow-x: hidden;
+    overflow-y: auto;
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
     margin: 0;
     padding: 0;
-}
-
-body {
-    font-family: var(--font-body);
-    background: var(--black);
-    color: var(--white);
-    overflow-x: hidden;
-    line-height: 1.6;
-    -webkit-font-smoothing: antialiased;
 }
 
 /* ==================== HERO VIDEO BACKGROUND ==================== */
@@ -585,6 +578,7 @@ h1, h2, h3, h4 {
  display: flex;
  align-items: center;
  justify-content: center;
+ overflow: hidden;
  background: 
  linear-gradient(135deg, #000000 0%, #031124 50%, #000000 100%),
  radial-gradient(ellipse at 20% 50%, rgba(250, 204, 21, 0.1) 0%, transparent 50%),
@@ -3330,6 +3324,7 @@ body.scene-3d {
     width: 100%;
     margin: 0 auto;
     padding: 2rem 0;
+    overflow: hidden;
 }
 .road-svg {
     position: absolute;

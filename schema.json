@@ -1,0 +1,1 @@
+{"type": "object", "properties": {"overallStatus": {"type": "string"}, "summary": {"type": "string"}, "finalUrl": {"type": "string"}, "finalPageTitle": {"type": "string"}, "results": {"type": "array"}, "consoleErrors": {"type": "array"}, "lessons": {"type": "array"}}, "required": ["overallStatus", "summary", "results"]}

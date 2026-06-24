@@ -150,7 +150,7 @@ a, button, .btn-primary, .btn-secondary, .btn-download, .btn-matrix-dl, .committ
 
 /* Offset for fixed navbar on anchor scroll */
 section[id] {
-    scroll-margin-top: 100px; /* Ensures sections don't hide under navbar */
+    scroll-margin-top: 136px; /* navbar + ticker height */
 }
 
 /* ==================== TYPOGRAPHY ==================== */
@@ -586,7 +586,7 @@ h1, h2, h3, h4 {
  radial-gradient(ellipse at 80% 20%, rgba(250, 204, 21, 0.06) 0%, transparent 50%);
  background-size: 200% 200%, 100% 100%, 100% 100%;
  animation: gradientShift 15s ease infinite;
- padding-top: 0; /* REMOVE the 80px padding since navbar is always visible */
+padding-top: 36px; /* offset for ticker below navbar */
 }
 .hero::before {
     content: '';

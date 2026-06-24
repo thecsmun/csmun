@@ -114,7 +114,9 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         e.preventDefault();
         const target = document.querySelector(this.getAttribute('href'));
         if (target) {
-            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            const offset = 136; // navbar + ticker height
+            const top = target.getBoundingClientRect().top + window.scrollY - offset;
+            window.scrollTo({ top, behavior: 'smooth' });
         }
     });
 });
@@ -455,7 +457,9 @@ if (!isMobile) {
  document.addEventListener('mousemove', (e) => {
  currentMouseX = e.clientX;
  currentMouseY = e.clientY;
+ if (window.scrollY < window.innerHeight) {
  requestAnimationFrame(update3DParallax);
+ }
  });
 }
 

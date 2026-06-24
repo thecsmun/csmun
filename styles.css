@@ -150,7 +150,7 @@ a, button, .btn-primary, .btn-secondary, .btn-download, .btn-matrix-dl, .committ
 
 /* Offset for fixed navbar on anchor scroll */
 section[id] {
-    scroll-margin-top: 136px; /* navbar + ticker height */
+    scroll-margin-top: 100px; /* offset for fixed navbar */
 }
 
 /* ==================== TYPOGRAPHY ==================== */
@@ -586,7 +586,7 @@ h1, h2, h3, h4 {
  radial-gradient(ellipse at 80% 20%, rgba(250, 204, 21, 0.06) 0%, transparent 50%);
  background-size: 200% 200%, 100% 100%, 100% 100%;
  animation: gradientShift 15s ease infinite;
-padding-top: 36px; /* offset for ticker below navbar */
+padding-top: 0;
 }
 .hero::before {
     content: '';
@@ -3560,41 +3560,6 @@ body.keyboard-nav *:focus {
 
 /* ==================== NEW ELEMENTS STYLING ==================== */
 
-/* Announcements Ticker */
-.announcements-ticker {
-  background: linear-gradient(90deg, rgba(250,204,21,0.15), rgba(250,204,21,0.05), rgba(250,204,21,0.15));
-  border-top: 1px solid rgba(250,204,21,0.3);
-  border-bottom: 1px solid rgba(250,204,21,0.3);
-  padding: 0.75rem 0;
-  overflow: hidden;
-  position: relative;
-  margin-top: 0;
-}
-
-.ticker-wrap {
-  width: 100%;
-  overflow: hidden;
-}
-
-.ticker-move {
-  display: inline-block;
-  white-space: nowrap;
-  animation: ticker 40s linear infinite;
-}
-
-.ticker-item {
-  display: inline-block;
-  padding: 0 3rem;
-  color: var(--white);
-  font-weight: 600;
-  font-size: 0.95rem;
-}
-
-@keyframes ticker {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
-}
-
 /* Sponsors Section */
 .sponsors-section {
   padding: 5rem 0;
@@ -4314,15 +4279,6 @@ body.keyboard-nav *:focus {
 
 /* Responsive Adjustments */
 @media (max-width: 768px) {
-  .announcements-ticker {
-    margin-top: 0;
-  }
-  
-  .ticker-item {
-    padding: 0 2rem;
-    font-size: 0.85rem;
-  }
-  
   .testimonials-container {
     padding: 0 3rem;
   }

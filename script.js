@@ -650,14 +650,12 @@ glowPath.setAttribute('d', d);
     function updateOnScroll() {
         const rect = container.getBoundingClientRect();
         const vh = window.innerHeight;
-        // Start drawing when top of container hits bottom of viewport
-        // Finish drawing when bottom of container hits top of viewport
         const start = vh - rect.top;
         const total = rect.height + vh;
         let progress = start / total;
         progress = Math.max(0, Math.min(1, progress));
-        // Remap so drawing starts at 0.05 and finishes at 0.95 of scroll
-        const remapped = Math.max(0, Math.min(1, (progress - 0.05) / 0.9));
+        // Start drawing from the very beginning
+        const remapped = Math.max(0, Math.min(1, progress / 0.95));
         const offset = pathLength * (1 - remapped);
         path.style.strokeDashoffset = offset;
         const glowPath = document.getElementById('roadGlow-path');

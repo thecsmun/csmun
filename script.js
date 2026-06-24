@@ -386,18 +386,7 @@ if (eggTitle) {
 }
 
 
-// ---- Replace broken team photos with "Coming Soon" placeholder (only on error) ----
-const placeholderSvg = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'%3E%3Crect width='200' height='200' fill='%231a1a2e' rx='12'/%3E%3Ccircle cx='100' cy='80' r='35' fill='none' stroke='%23facc15' stroke-width='2' opacity='0.4'/%3E%3Cpath d='M55 165 Q100 115 145 165' fill='none' stroke='%23facc15' stroke-width='2' opacity='0.4'/%3E%3Ctext x='100' y='155' text-anchor='middle' font-family='Inter,sans-serif' font-size='11' font-weight='700' fill='%23facc15'%3ECOMING%3C/text%3E%3Ctext x='100' y='170' text-anchor='middle' font-family='Inter,sans-serif' font-size='11' font-weight='700' fill='%23facc15'%3ESOON%3C/text%3E%3C/svg%3E";
-(function() {
-    const imgs = document.querySelectorAll('.secretariat-card img, .eb-card img');
-    imgs.forEach(img => {
-        // Only replace with placeholder if the image fails to load
-        img.addEventListener('error', function onErr() {
-            this.src = placeholderSvg;
-            this.removeEventListener('error', onErr);
-        });
-    });
-})();
+
 // =============================================
 // 3D ENHANCED FEATURES (Friend's Additions)
 // =============================================
@@ -562,34 +551,43 @@ function initCommitteeRoad() {
  svg.style.width = '100%';
  svg.style.height = totalHeight + 'px';
 
- let d = `M ${W * 0.15} 50`; // Start at 15% from left
- 
+ let d = `M ${W * 0.25} 50`;
+
  cards.forEach((card, i) => {
  const yPos = 50 + (i * cardHeight);
- 
+
  card.style.position = 'absolute';
  card.style.top = yPos + 'px';
  card.style.width = '380px';
  card.style.maxWidth = '35%';
- 
+
  if (i % 2 === 0) {
- card.style.left = '12%'; // EXTRA spacing - 12% from left edge
+ card.style.left = '12%';
  card.style.right = 'auto';
  } else {
- card.style.right = '12%'; // EXTRA spacing - 12% from right edge
+ card.style.right = '12%';
  card.style.left = 'auto';
  }
- 
- if (i > 0) {
- const prevX = (i - 1) % 2 === 0 ? W * 0.15 : W * 0.85; // 15% and 85%
- const currentX = i % 2 === 0 ? W * 0.15 : W * 0.85;
- const prevY = 50 + ((i - 1) * cardHeight) + 150;
- const currentY = yPos + 150;
- const midY = (prevY + currentY) / 2;
- 
- d += ` C ${prevX} ${midY}, ${currentX} ${midY}, ${currentX} ${currentY}`;
+
+ const leftX = W * 0.25;
+ const rightX = W * 0.75;
+
+ if (i === 0) {
+ d += ` L ${leftX} ${yPos + 150}`;
  } else {
- d += ` L ${W * 0.15} ${yPos + 150}`;
+ const prevSide = (i - 1) % 2 === 0 ? leftX : rightX;
+ const currSide = i % 2 === 0 ? leftX : rightX;
+ const prevY = 50 + ((i - 1) * cardHeight) + 150;
+ const currY = yPos + 150;
+
+ // Dramatic S-curve: first control point hugs the starting side,
+ // second control point swings hard to the destination side
+ const cp1x = prevSide;
+ const cp1y = prevY + (currY - prevY) * 0.6;
+ const cp2x = currSide;
+ const cp2y = prevY + (currY - prevY) * 0.4;
+
+ d += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${currSide} ${currY}`;
  }
  });
 

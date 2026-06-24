@@ -462,13 +462,13 @@ if (!isMobile) {
 // ==================== HORIZONTAL SCROLLING ROADMAP ==================== 
 
 const roadmapSection = document.querySelector('.committees-roadmap-section');
-const roadmapWrapper = document.getElementById('roadmapWrapper');
-const roadmapTrack = document.getElementById('roadmapTrack');
-const roadmapCards = document.querySelectorAll('.roadmap-card');
-const roadmapProgress = document.getElementById('roadmapProgress');
-const scrollHint = document.getElementById('scrollHint');
+const roadmapWrapper = roadmapSection ? document.getElementById('roadmapWrapper') : null;
+const roadmapTrack = roadmapSection ? document.getElementById('roadmapTrack') : null;
+const roadmapCards = roadmapSection ? document.querySelectorAll('.roadmap-card') : [];
+const roadmapProgress = roadmapSection ? document.getElementById('roadmapProgress') : null;
+const scrollHint = roadmapSection ? document.getElementById('scrollHint') : null;
 
-if (roadmapSection && roadmapTrack && roadmapCards.length > 0) {
+if (roadmapSection && roadmapTrack && roadmapCards && roadmapCards.length > 0) {
  const totalCards = roadmapCards.length;
  
  function updateRoadmap() {

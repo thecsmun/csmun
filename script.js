@@ -536,92 +536,92 @@ if (roadmapSection && roadmapTrack && roadmapCards && roadmapCards.length > 0) {
 }
 
 function initCommitteeRoad() {
-    const container = document.getElementById('committeesRoad');
-    const svg = document.getElementById('roadSvg');
-    const path = document.getElementById('roadPath');
-    if (!container || !svg || !path) return;
+ const container = document.getElementById('committeesRoad');
+ const svg = document.getElementById('roadSvg');
+ const path = document.getElementById('roadPath');
+ if (!container || !svg || !path) return;
 
-    const cards = container.querySelectorAll('.road-card');
-    if (!cards.length) return;
+ const cards = container.querySelectorAll('.road-card');
+ if (!cards.length) return;
 
-    let pathLength = 0;
+ let pathLength = 0;
 
-    function buildPath() {
-        const W = container.offsetWidth;
-        const H = container.offsetHeight;
+ function buildPath() {
+ const W = container.offsetWidth;
+ const cardHeight = 420; // Height per card including spacing
+ const totalHeight = cardHeight * cards.length + 200; // Extra padding at bottom
+ 
+ container.style.minHeight = totalHeight + 'px';
+ svg.setAttribute('viewBox', `0 0 ${W} ${totalHeight}`);
+ svg.setAttribute('width', W);
+ svg.setAttribute('height', totalHeight);
+ svg.style.width = '100%';
+ svg.style.height = totalHeight + 'px';
 
-        svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
-        svg.setAttribute('preserveAspectRatio', 'none');
-        svg.style.width = '100%';
-        svg.style.height = H + 'px';
-        svg.style.overflow = 'hidden';
+ let d = `M ${W * 0.25} 50`; // Start 50px from top
+ 
+ // Position cards and build path
+ cards.forEach((card, i) => {
+ const yPos = 50 + (i * cardHeight); // Start at 50px, then space evenly
+ const xPos = i % 2 === 0 ? W * 0.15 : W * 0.55; // Left or right
+ 
+ // Position card
+ card.style.position = 'absolute';
+ card.style.top = yPos + 'px';
+ card.style.width = '380px';
+ card.style.maxWidth = '40%';
+ 
+ if (i % 2 === 0) {
+ card.style.left = '5%';
+ card.style.right = 'auto';
+ } else {
+ card.style.right = '5%';
+ card.style.left = 'auto';
+ }
+ 
+ // Build curved path to this card
+ if (i > 0) {
+ const prevX = (i - 1) % 2 === 0 ? W * 0.25 : W * 0.75;
+ const currentX = i % 2 === 0 ? W * 0.25 : W * 0.75;
+ const prevY = 50 + ((i - 1) * cardHeight) + 150;
+ const currentY = yPos + 150;
+ const midY = (prevY + currentY) / 2;
+ 
+ d += ` C ${prevX} ${midY}, ${currentX} ${midY}, ${currentX} ${currentY}`;
+ } else {
+ d += ` L ${W * 0.25} ${yPos + 150}`;
+ }
+ });
 
-        const cardCount = cards.length;
-        const segH = H / cardCount;
+ // Apply path to all road elements
+ const allPaths = ['roadPath', 'roadPathEdge', 'roadPathLeft', 'roadPathRight', 'roadPathDash'];
+ allPaths.forEach(id => {
+ const el = document.getElementById(id);
+ if (el) el.setAttribute('d', d);
+ });
 
-        let d = `M ${W * 0.25} 0`;
+ pathLength = path.getTotalLength();
+ path.style.strokeDasharray = pathLength;
+ path.style.strokeDashoffset = pathLength;
+ }
 
-        // Position cards along the path (only on desktop)
-        const isMobile = window.innerWidth <= 768;
-        cards.forEach((card, i) => {
-            if (isMobile) {
-                // On mobile, restore normal flow stacking
-                card.style.position = '';
-                card.style.top = '';
-                card.style.left = '';
-                card.style.right = '';
-            } else {
-                // Position the card at the calculated coordinates
-                card.style.position = 'absolute';
-                card.style.top = (segH * i) + 'px';
+ function updateOnScroll() {
+ const rect = container.getBoundingClientRect();
+ const vh = window.innerHeight;
+ const start = vh - rect.top;
+ const total = rect.height + vh;
+ let progress = start / total;
+ progress = Math.max(0, Math.min(1, progress));
 
-                if (i % 2 === 0) {
-                    card.style.left = '0';
-                    card.style.right = 'auto';
-                } else {
-                    card.style.right = '0';
-                    card.style.left = 'auto';
-                }
-            }
-        });
+ const offset = pathLength * (1 - progress);
+ path.style.strokeDashoffset = offset;
+ }
 
-        // Draw the path connecting all positions
-        for (let i = 0; i < cardCount; i++) {
-            const y1 = segH * i + segH * 0.5;
-            const y2 = segH * (i + 1);
-            const fromX = i % 2 === 0 ? W * 0.25 : W * 0.75;
-            const toX = i % 2 === 0 ? W * 0.75 : W * 0.25;
-            d += ` C ${fromX} ${y1}, ${toX} ${y1}, ${toX} ${y2}`;
-        }
+ buildPath();
+ updateOnScroll();
 
-        const allPaths = ['roadPath', 'roadPathEdge', 'roadPathLeft', 'roadPathRight', 'roadPathDash'];
-        allPaths.forEach(id => {
-            const el = document.getElementById(id);
-            if (el) el.setAttribute('d', d);
-        });
-
-        pathLength = path.getTotalLength();
-        path.style.strokeDasharray = pathLength;
-        path.style.strokeDashoffset = pathLength;
-    }
-
-    function updateOnScroll() {
-        const rect = container.getBoundingClientRect();
-        const vh = window.innerHeight;
-        const start = vh - rect.top;
-        const total = rect.height + vh;
-        let progress = start / total;
-        progress = Math.max(0, Math.min(1, progress));
-        const remapped = Math.max(0, Math.min(1, progress / 0.95));
-        const offset = pathLength * (1 - remapped);
-        path.style.strokeDashoffset = offset;
-    }
-
-    buildPath();
-    updateOnScroll();
-
-    window.addEventListener('resize', debounce(() => { buildPath(); updateOnScroll(); }, 200));
-    window.addEventListener('scroll', rafThrottle(updateOnScroll), { passive: true });
+ window.addEventListener('resize', debounce(() => { buildPath(); updateOnScroll(); }, 200));
+ window.addEventListener('scroll', rafThrottle(updateOnScroll), { passive: true });
 }
 
 window.addEventListener('load', () => setTimeout(initCommitteeRoad, 300));

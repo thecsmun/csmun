@@ -3334,7 +3334,7 @@ body.scene-3d {
     height: 100%;
     pointer-events: none;
     z-index: 0;
-    overflow: visible;
+    overflow: hidden;
 }
 .road-path {
     fill: none;

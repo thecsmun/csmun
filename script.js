@@ -580,12 +580,11 @@ function initCommitteeRoad() {
  const prevY = 50 + ((i - 1) * cardHeight) + 150;
  const currY = yPos + 150;
 
- // Dramatic S-curve: first control point hugs the starting side,
- // second control point swings hard to the destination side
+ // Tight S-curve: road stays on its side longer then snaps across
  const cp1x = prevSide;
- const cp1y = prevY + (currY - prevY) * 0.6;
+ const cp1y = prevY + (currY - prevY) * 0.75;
  const cp2x = currSide;
- const cp2y = prevY + (currY - prevY) * 0.4;
+ const cp2y = prevY + (currY - prevY) * 0.25;
 
  d += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${currSide} ${currY}`;
  }

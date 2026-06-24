@@ -586,7 +586,7 @@ h1, h2, h3, h4 {
  radial-gradient(ellipse at 80% 20%, rgba(250, 204, 21, 0.06) 0%, transparent 50%);
  background-size: 200% 200%, 100% 100%, 100% 100%;
  animation: gradientShift 15s ease infinite;
-padding-top: 0;
+padding-top: 80px;
 }
 .hero::before {
     content: '';

@@ -551,9 +551,11 @@ function initCommitteeRoad() {
         const W = containerRect.width;
         const H = container.offsetHeight;
 
-        svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+        svg.setAttribute('preserveAspectRatio', 'none');
         svg.style.width = '100%';
         svg.style.height = H + 'px';
+        svg.style.overflow = 'hidden';
 
         let defs = svg.querySelector('defs');
         if (!defs) {
@@ -590,11 +592,11 @@ const points = [];
         cards.forEach(card => {
             const r = card.getBoundingClientRect();
             const containerLeft = containerRect.left + window.scrollX;
-            // X = center of card relative to container
             const x = (r.left + window.scrollX) - containerLeft + r.width / 2;
-            // Y = bottom of card so line exits through the bottom naturally
-            const y = (r.top + window.scrollY) - containerTop + r.height - 20;
-            points.push({ x, y });
+            const y = (r.top + window.scrollY) - containerTop + r.height / 2;
+            // Clamp x so road stays within container
+            const clampedX = Math.max(50, Math.min(W - 50, x));
+            points.push({ x: clampedX, y });
         });
 
         // Catmull-Rom to Bezier — physically cannot make sharp bounces

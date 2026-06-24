@@ -3344,7 +3344,7 @@ body.scene-3d {
 }
 .road-path {
     fill: none;
-    stroke: #1a1a1a;
+    stroke: #333333;
     stroke-width: 44;
     stroke-linecap: round;
     stroke-linejoin: round;

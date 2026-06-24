@@ -597,6 +597,7 @@ function initCommitteeRoad() {
 }
 
 window.addEventListener('load', () => setTimeout(initCommitteeRoad, 300));
+document.addEventListener('DOMContentLoaded', () => setTimeout(initCommitteeRoad, 500));
 
 // ==================== TOAST NOTIFICATION SYSTEM ====================
 function showToast(message, type = 'info') {

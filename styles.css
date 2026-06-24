@@ -3343,12 +3343,11 @@ body.scene-3d {
 }
 .road-path {
     fill: none;
-    stroke: #2a2a2a;
-    stroke-width: 40;
+    stroke: #1a1a1a;
+    stroke-width: 44;
     stroke-linecap: round;
     stroke-linejoin: round;
     opacity: 1;
-    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.8));
 }
 /* Road edge lines */
 .road-path-edge {

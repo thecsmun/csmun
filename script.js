@@ -709,7 +709,7 @@ glowPath.setAttribute('d', d);
 
  window.addEventListener('resize', debounce(() => { buildPath(); updateOnScroll(); }, 200));
     window.addEventListener('scroll', rafThrottle(updateOnScroll), { passive: true });
-}
+
 
 window.addEventListener('load', () => setTimeout(initCommitteeRoad, 300));
 

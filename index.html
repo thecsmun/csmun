@@ -478,59 +478,18 @@
             <h2 class="section-title">What Delegates Say</h2>
             <div class="testimonials-container">
                 <button class="testimonial-nav testimonial-prev" aria-label="Previous">‹</button>
-                <div class="testimonial-track">
-                    <div class="testimonial-slide active">
-                        <div class="testimonial-content">
-                            <div class="quote-mark">"</div>
-                            <p class="testimonial-text">CSMUN 2025 was a transformative experience. The debates were intense, the EBs were phenomenal, and I learned more in three days than I did in months of classroom study.</p>
-                            <div class="testimonial-author">
-                                <div class="author-avatar">
-                                    <svg width="60" height="60" viewBox="0 0 60 60"><circle cx="30" cy="30" r="28" fill="rgba(250,204,21,0.15)"/><circle cx="30" cy="22" r="10" fill="var(--gold)" opacity="0.4"/><path d="M10 50 Q30 35 50 50" fill="var(--gold)" opacity="0.4"/></svg>
-                                </div>
-                                <div>
-                                    <h4>Arjun Mehta</h4>
-                                    <p>Best Delegate, UNSC 2025</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="testimonial-slide">
-                        <div class="testimonial-content">
-                            <div class="quote-mark">"</div>
-                            <p class="testimonial-text">The level of organization and professionalism at CSMUN is unmatched. From registration to awards, everything was flawless. Highly recommend for first-timers and veterans alike!</p>
-                            <div class="testimonial-author">
-                                <div class="author-avatar">
-                                    <svg width="60" height="60" viewBox="0 0 60 60"><circle cx="30" cy="30" r="28" fill="rgba(250,204,21,0.15)"/><circle cx="30" cy="22" r="10" fill="var(--gold)" opacity="0.4"/><path d="M10 50 Q30 35 50 50" fill="var(--gold)" opacity="0.4"/></svg>
-                                </div>
-                                <div>
-                                    <h4>Priya Sharma</h4>
-                                    <p>High Commendation, UNHRC 2025</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="testimonial-slide">
-                        <div class="testimonial-content">
-                            <div class="quote-mark">"</div>
-                            <p class="testimonial-text">As an International Press delegate, CSMUN gave me hands-on journalism experience. I interviewed diplomats, covered live debates, and published my first article. Unforgettable!</p>
-                            <div class="testimonial-author">
-                                <div class="author-avatar">
-                                    <svg width="60" height="60" viewBox="0 0 60 60"><circle cx="30" cy="30" r="28" fill="rgba(250,204,21,0.15)"/><circle cx="30" cy="22" r="10" fill="var(--gold)" opacity="0.4"/><path d="M10 50 Q30 35 50 50" fill="var(--gold)" opacity="0.4"/></svg>
-                                </div>
-                                <div>
-                                    <h4>Kabir Singh</h4>
-                                    <p>International Press 2025</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <div class="testimonial-track"><!-- populated by JS --></div>
                 <button class="testimonial-nav testimonial-next" aria-label="Next">›</button>
             </div>
-            <div class="testimonial-dots">
-                <span class="dot active" data-slide="0"></span>
-                <span class="dot" data-slide="1"></span>
-                <span class="dot" data-slide="2"></span>
+            <div class="testimonial-dots"></div>
+            <div class="review-writer">
+                <button class="review-toggle-btn">Write a Review</button>
+                <div class="review-form">
+                    <input type="text" id="review-name" placeholder="Your Name" required>
+                    <input type="text" id="review-title" placeholder="Your Title / Role (e.g. Best Delegate, UNSC 2025)" required>
+                    <textarea id="review-text" placeholder="Share your CSMUN experience..." required></textarea>
+                    <button class="btn-primary submit-review">Submit Review</button>
+                </div>
             </div>
         </div>
     </section>

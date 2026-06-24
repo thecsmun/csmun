@@ -687,50 +687,143 @@ if (enterBtn) {
     enterBtn.addEventListener('click', () => unlockAchievement('diplomat'));
 }
 
-// ==================== TESTIMONIALS SLIDER ====================
+// ==================== DYNAMIC TESTIMONIALS SLIDER ====================
 (function() {
-  const track = document.querySelector('.testimonial-track');
-  if (!track) return;
-  
-  const slides = document.querySelectorAll('.testimonial-slide');
-  const dots = document.querySelectorAll('.testimonial-dots .dot');
-  const prevBtn = document.querySelector('.testimonial-prev');
-  const nextBtn = document.querySelector('.testimonial-next');
-  
-  if (!slides.length) return;
+  const STORAGE_KEY = 'csmun_reviews';
   let currentSlide = 0;
-  const totalSlides = slides.length;
-  
-  function showSlide(index) {
-    slides.forEach(s => s.classList.remove('active'));
-    dots.forEach(d => d.classList.remove('active'));
-    
-    slides[index].classList.add('active');
-    dots[index].classList.add('active');
+  let autoAdvance = null;
+
+  function getReviews() {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) {
+      try { return JSON.parse(stored); } catch (_) {}
+    }
+    const defaults = [
+      { name: 'Arjun Mehta', title: 'Best Delegate, UNSC 2025', text: 'CSMUN 2025 was a transformative experience. The debates were intense, the EBs were phenomenal, and I learned more in three days than I did in months of classroom study.' },
+      { name: 'Priya Sharma', title: 'High Commendation, UNHRC 2025', text: 'The level of organization and professionalism at CSMUN is unmatched. From registration to awards, everything was flawless. Highly recommend for first-timers and veterans alike!' },
+      { name: 'Kabir Singh', title: 'International Press 2025', text: 'As an International Press delegate, CSMUN gave me hands-on journalism experience. I interviewed diplomats, covered live debates, and published my first article. Unforgettable!' }
+    ];
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(defaults));
+    return defaults;
   }
-  
-  function nextSlide() {
-    currentSlide = (currentSlide + 1) % totalSlides;
-    showSlide(currentSlide);
+
+  function saveReviews(reviews) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(reviews));
   }
-  
-  function prevSlide() {
-    currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
-    showSlide(currentSlide);
+
+  function escapeHtml(str) {
+    var d = document.createElement('div');
+    d.textContent = str;
+    return d.innerHTML;
   }
-  
-  if (nextBtn) nextBtn.addEventListener('click', nextSlide);
-  if (prevBtn) prevBtn.addEventListener('click', prevSlide);
-  
-  dots.forEach((dot, index) => {
-    dot.addEventListener('click', () => {
-      currentSlide = index;
-      showSlide(currentSlide);
+
+  function renderSlider() {
+    var track = document.querySelector('.testimonial-track');
+    var dotsContainer = document.querySelector('.testimonial-dots');
+    if (!track) return;
+
+    var reviews = getReviews();
+    track.innerHTML = '';
+    dotsContainer.innerHTML = '';
+
+    if (!reviews.length) {
+      track.innerHTML = '<p style="text-align:center;color:var(--gray-500);padding:2rem;">No reviews yet. Be the first to share your experience!</p>';
+      return;
+    }
+
+    reviews.forEach(function(r, i) {
+      var slide = document.createElement('div');
+      slide.className = 'testimonial-slide' + (i === 0 ? ' active' : '');
+      slide.innerHTML = '<div class="testimonial-content"><div class="quote-mark">"</div><p class="testimonial-text">' + escapeHtml(r.text) + '</p><div class="testimonial-author"><div class="author-avatar"><svg width="60" height="60" viewBox="0 0 60 60"><circle cx="30" cy="30" r="28" fill="rgba(250,204,21,0.15)"/><circle cx="30" cy="22" r="10" fill="var(--gold)" opacity="0.4"/><path d="M10 50 Q30 35 50 50" fill="var(--gold)" opacity="0.4"/></svg></div><div><h4>' + escapeHtml(r.name) + '</h4><p>' + escapeHtml(r.title) + '</p></div></div></div>';
+      track.appendChild(slide);
+
+      var dot = document.createElement('span');
+      dot.className = 'dot' + (i === 0 ? ' active' : '');
+      dot.setAttribute('data-slide', i);
+      dotsContainer.appendChild(dot);
     });
-  });
-  
-  // Auto-advance every 6 seconds
-  setInterval(nextSlide, 6000);
+
+    attachControls();
+  }
+
+  function attachControls() {
+    var slides = document.querySelectorAll('.testimonial-slide');
+    var dots = document.querySelectorAll('.testimonial-dots .dot');
+    var prevBtn = document.querySelector('.testimonial-prev');
+    var nextBtn = document.querySelector('.testimonial-next');
+    if (!slides.length) return;
+
+    currentSlide = 0;
+    if (autoAdvance) clearInterval(autoAdvance);
+
+    function showSlide(index) {
+      slides.forEach(function(s) { s.classList.remove('active'); });
+      dots.forEach(function(d) { d.classList.remove('active'); });
+      slides[index].classList.add('active');
+      dots[index].classList.add('active');
+    }
+
+    if (nextBtn) {
+      nextBtn.onclick = function() {
+        currentSlide = (currentSlide + 1) % slides.length;
+        showSlide(currentSlide);
+      };
+    }
+    if (prevBtn) {
+      prevBtn.onclick = function() {
+        currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+        showSlide(currentSlide);
+      };
+    }
+    dots.forEach(function(dot, i) {
+      dot.onclick = function() {
+        currentSlide = i;
+        showSlide(currentSlide);
+      };
+    });
+
+    autoAdvance = setInterval(function() {
+      currentSlide = (currentSlide + 1) % slides.length;
+      showSlide(currentSlide);
+    }, 6000);
+  }
+
+  renderSlider();
+
+  var toggleBtn = document.querySelector('.review-toggle-btn');
+  var reviewForm = document.querySelector('.review-form');
+  var submitBtn = document.querySelector('.submit-review');
+
+  if (toggleBtn && reviewForm) {
+    var formVisible = false;
+    toggleBtn.addEventListener('click', function() {
+      formVisible = !formVisible;
+      reviewForm.style.display = formVisible ? 'flex' : 'none';
+      toggleBtn.textContent = formVisible ? 'Cancel' : 'Write a Review';
+    });
+  }
+
+  if (submitBtn) {
+    submitBtn.addEventListener('click', function() {
+      var name = document.getElementById('review-name');
+      var title = document.getElementById('review-title');
+      var text = document.getElementById('review-text');
+      if (!name.value.trim() || !title.value.trim() || !text.value.trim()) {
+        alert('Please fill in all fields.');
+        return;
+      }
+      var reviews = getReviews();
+      reviews.unshift({ name: name.value.trim(), title: title.value.trim(), text: text.value.trim() });
+      saveReviews(reviews);
+      name.value = '';
+      title.value = '';
+      text.value = '';
+      if (reviewForm) reviewForm.style.display = 'none';
+      if (toggleBtn) toggleBtn.textContent = 'Write a Review';
+      formVisible = false;
+      renderSlider();
+    });
+  }
 })();
 
 // ==================== LAZY LOADING IMAGES WITH BLUR-UP ====================

@@ -541,8 +541,8 @@ function initCommitteeRoad() {
 
  function buildPath() {
  const W = container.offsetWidth;
- const cardHeight = 420;
- const totalHeight = cardHeight * cards.length + 200;
+ const cardHeight = 480;
+ const totalHeight = cardHeight * cards.length + 300;
 
  container.style.minHeight = totalHeight + 'px';
  svg.setAttribute('viewBox', `0 0 ${W} ${totalHeight}`);
@@ -551,49 +551,41 @@ function initCommitteeRoad() {
  svg.style.width = '100%';
  svg.style.height = totalHeight + 'px';
 
- // Road starts top-right, comes straight down then sweeps left
- const startX = W * 0.72;
- let d = `M ${startX} 0`;
+ const leftX = W * 0.25;
+ const rightX = W * 0.75;
+
+ // Road enters from top-right, just like image 2
+ let d = `M ${rightX} 0`;
 
  cards.forEach((card, i) => {
- const yPos = 50 + (i * cardHeight);
+ const yPos = 80 + (i * cardHeight);
+ const currY = yPos + 180;
+ const currX = i % 2 === 0 ? leftX : rightX;
 
  card.style.position = 'absolute';
  card.style.top = yPos + 'px';
- card.style.width = '380px';
- card.style.maxWidth = '35%';
+ card.style.width = '38%';
+ card.style.maxWidth = '500px';
 
  if (i % 2 === 0) {
- card.style.left = '12%';
+ card.style.left = '4%';
  card.style.right = 'auto';
  } else {
- card.style.right = '12%';
+ card.style.right = '4%';
  card.style.left = 'auto';
  }
 
- const leftX = W * 0.22;
- const rightX = W * 0.78;
- const currSide = i % 2 === 0 ? leftX : rightX;
- const currY = yPos + 200;
-
  if (i === 0) {
- // First card: road comes straight down from top-right
- // then makes ONE clean sweep to the left card
- const cp1x = startX;
- const cp1y = currY * 0.75;
- const cp2x = startX - (startX - currSide) * 0.4;
- const cp2y = currY * 0.95;
- d += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${currSide} ${currY}`;
+ // First segment: comes nearly straight down from top-right
+ // then ONE wide sweep left to first card — exactly like image 2
+ d += ` C ${rightX} ${currY * 0.55}, ${rightX} ${currY * 0.8}, ${currX} ${currY}`;
  } else {
- const prevSide = (i - 1) % 2 === 0 ? leftX : rightX;
- const prevY = 50 + ((i - 1) * cardHeight) + 200;
+ const prevX = (i - 1) % 2 === 0 ? leftX : rightX;
+ const prevY = 80 + ((i - 1) * cardHeight) + 180;
 
- // Road goes straight down its side, then ONE sharp sweep across
- const cp1x = prevSide;
- const cp1y = prevY + (currY - prevY) * 0.88;
- const cp2x = prevSide + (currSide - prevSide) * 0.15;
- const cp2y = prevY + (currY - prevY) * 0.92;
- d += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${currSide} ${currY}`;
+ // Each segment: road goes nearly straight down on its side
+ // then ONE tight sweep across — pure highway bend, no S-curve
+ d += ` C ${prevX} ${prevY + (currY - prevY) * 0.9}, ${currX} ${prevY + (currY - prevY) * 0.9}, ${currX} ${currY}`;
  }
  });
 

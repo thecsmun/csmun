@@ -548,8 +548,8 @@ function initCommitteeRoad() {
 
  function buildPath() {
  const W = container.offsetWidth;
- const cardHeight = 420; // Height per card including spacing
- const totalHeight = cardHeight * cards.length + 200; // Extra padding at bottom
+ const cardHeight = 420;
+ const totalHeight = cardHeight * cards.length + 200;
  
  container.style.minHeight = totalHeight + 'px';
  svg.setAttribute('viewBox', `0 0 ${W} ${totalHeight}`);
@@ -558,42 +558,37 @@ function initCommitteeRoad() {
  svg.style.width = '100%';
  svg.style.height = totalHeight + 'px';
 
- let d = `M ${W * 0.25} 50`; // Start 50px from top
+ let d = `M ${W * 0.15} 50`; // Start at 15% from left
  
- // Position cards and build path
  cards.forEach((card, i) => {
- const yPos = 50 + (i * cardHeight); // Start at 50px, then space evenly
- const xPos = i % 2 === 0 ? W * 0.15 : W * 0.55; // Left or right
+ const yPos = 50 + (i * cardHeight);
  
- // Position card
  card.style.position = 'absolute';
  card.style.top = yPos + 'px';
  card.style.width = '380px';
- card.style.maxWidth = '40%';
+ card.style.maxWidth = '35%';
  
  if (i % 2 === 0) {
- card.style.left = '5%';
+ card.style.left = '12%'; // EXTRA spacing - 12% from left edge
  card.style.right = 'auto';
  } else {
- card.style.right = '5%';
+ card.style.right = '12%'; // EXTRA spacing - 12% from right edge
  card.style.left = 'auto';
  }
  
- // Build curved path to this card
  if (i > 0) {
- const prevX = (i - 1) % 2 === 0 ? W * 0.25 : W * 0.75;
- const currentX = i % 2 === 0 ? W * 0.25 : W * 0.75;
+ const prevX = (i - 1) % 2 === 0 ? W * 0.15 : W * 0.85; // 15% and 85%
+ const currentX = i % 2 === 0 ? W * 0.15 : W * 0.85;
  const prevY = 50 + ((i - 1) * cardHeight) + 150;
  const currentY = yPos + 150;
  const midY = (prevY + currentY) / 2;
  
  d += ` C ${prevX} ${midY}, ${currentX} ${midY}, ${currentX} ${currentY}`;
  } else {
- d += ` L ${W * 0.25} ${yPos + 150}`;
+ d += ` L ${W * 0.15} ${yPos + 150}`;
  }
  });
 
- // Apply path to all road elements
  const allPaths = ['roadPath', 'roadPathEdge', 'roadPathLeft', 'roadPathRight', 'roadPathDash'];
  allPaths.forEach(id => {
  const el = document.getElementById(id);

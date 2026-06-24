@@ -443,6 +443,7 @@ const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/
 let currentMouseX = 0, currentMouseY = 0;
 function update3DParallax() {
  if (isMobile) return;
+ if (window.scrollY > window.innerHeight) return;
  const normalizedX = (currentMouseX / window.innerWidth - 0.5) * 2;
  const normalizedY = (currentMouseY / window.innerHeight - 0.5) * 2;
  const skylineLayers = document.querySelectorAll('.skyline-layer');
@@ -457,9 +458,6 @@ if (!isMobile) {
  document.addEventListener('mousemove', (e) => {
  currentMouseX = e.clientX;
  currentMouseY = e.clientY;
- if (window.scrollY < window.innerHeight) {
- requestAnimationFrame(update3DParallax);
- }
  });
 }
 

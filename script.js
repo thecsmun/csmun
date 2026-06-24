@@ -67,7 +67,7 @@ const navLinks = document.querySelectorAll('.nav-links a');
 
 const handleScroll = rafThrottle(() => {
     const scrollY = window.scrollY;
-    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const docHeight = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
     
     // Navbar: show after scrolling past the hero section, hide when at top
     const hero = document.querySelector('.hero');
@@ -811,4 +811,18 @@ if (enterBtn) {
         });
     }, { rootMargin: '200px 0px' });
     lazyImages.forEach(img => imageObserver.observe(img));
+})();// ==================== FIX INFINITE SCROLL ====================
+(function fixOverflow() {
+    document.documentElement.style.overflowX = 'hidden';
+    document.body.style.overflowX = 'hidden';
+    document.body.style.maxWidth = '100vw';
+    document.documentElement.style.maxWidth = '100vw';
+    
+    // Force recalculate layout after all elements render
+    window.addEventListener('load', () => {
+        setTimeout(() => {
+            document.documentElement.style.overflowX = 'hidden';
+            document.body.style.overflowX = 'hidden';
+        }, 500);
+    });
 })();

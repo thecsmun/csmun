@@ -3343,12 +3343,32 @@ body.scene-3d {
 }
 .road-path {
     fill: none;
-    stroke: url(#roadGradient);
-    stroke-width: 5;
+    stroke: #2a2a2a;
+    stroke-width: 40;
     stroke-linecap: round;
     stroke-linejoin: round;
-    opacity: 0.85;
-    filter: drop-shadow(0 0 10px rgba(250,204,21,0.6)) drop-shadow(0 0 25px rgba(250,204,21,0.3));
+    opacity: 1;
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.8));
+}
+/* Road edge lines */
+.road-path-edge {
+    fill: none;
+    stroke: #444;
+    stroke-width: 44;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    opacity: 1;
+}
+
+/* Road center dashes */
+.road-path-dash {
+    fill: none;
+    stroke: #facc15;
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-dasharray: 20 15;
+    stroke-linejoin: round;
+    opacity: 0.8;
 }
 .road-card {
     position: relative;

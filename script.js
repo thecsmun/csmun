@@ -621,9 +621,21 @@ const points = [];
         }
 
         path.setAttribute('d', d);
-        path.setAttribute('stroke', 'url(#roadGradient)');
-        path.setAttribute('filter', 'url(#roadGlowFilter)');
-        glowPath.setAttribute('d', d);
+path.removeAttribute('filter');
+
+const edgePath = svg.querySelector('#roadPathEdge');
+if (edgePath) edgePath.setAttribute('d', d);
+
+const dashPath = svg.querySelector('#roadPathDash');
+if (dashPath) dashPath.setAttribute('d', d);
+
+const leftLine = svg.querySelector('#roadPathLeft');
+if (leftLine) leftLine.setAttribute('d', d);
+
+const rightLine = svg.querySelector('#roadPathRight');
+if (rightLine) rightLine.setAttribute('d', d);
+
+glowPath.setAttribute('d', d);
 
         pathLength = path.getTotalLength();
         path.style.strokeDasharray = pathLength;

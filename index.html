@@ -280,7 +280,22 @@
  <span class="committee-quote-attribution">&mdash; Dag Hammarskjöld</span>
  </div>
  <div class="committees-road" id="committeesRoad">
-    <svg class="road-svg" id="roadSvg"><path id="roadPath" class="road-path"></path></svg>
+    <svg class="road-svg" id="roadSvg" style="overflow:hidden;">
+    <defs>
+        <filter id="roadShadow" x="-20%" y="-20%" width="140%" height="140%">
+            <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="rgba(0,0,0,0.8)"/>
+        </filter>
+    </defs>
+    <!-- Road border/kerb -->
+    <path id="roadPathEdge" fill="none" stroke="#555" stroke-width="52" stroke-linecap="round" stroke-linejoin="round" filter="url(#roadShadow)"></path>
+    <!-- Road asphalt surface -->
+    <path id="roadPath" class="road-path" fill="none" stroke="#1a1a1a" stroke-width="44" stroke-linecap="round" stroke-linejoin="round"></path>
+    <!-- Road side lines (white) -->
+    <path id="roadPathLeft" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2" stroke-linecap="round" stroke-dasharray="none"></path>
+    <path id="roadPathRight" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2" stroke-linecap="round" stroke-dasharray="none"></path>
+    <!-- Center dashes (yellow) -->
+    <path id="roadPathDash" fill="none" stroke="#facc15" stroke-width="3" stroke-linecap="round" stroke-dasharray="24 18"></path>
+</svg>
 
     <div class="committee-card road-card road-left">
         <img loading="lazy" src="images/committees/unsc.png" alt="UNSC" class="committee-img">

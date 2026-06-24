@@ -57,11 +57,10 @@ function rafThrottle(fn) {
     };
 }
 
-// ---- Navbar Scroll Effect (combined with progress + back-to-top) ----
+// ---- Navbar Scroll Effect - FIXED VERSION ----
 const navbar = document.getElementById('navbar');
 const backToTop = document.getElementById('backToTop');
 const progressBar = document.getElementById('progressBar');
-const heroContent = document.querySelector('.hero-content');
 const sections = document.querySelectorAll('section[id]');
 const navLinks = document.querySelectorAll('.nav-links a');
 
@@ -69,15 +68,8 @@ const handleScroll = rafThrottle(() => {
     const scrollY = window.scrollY;
     const docHeight = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
     
-    // Navbar: show after scrolling past the hero section, hide when at top
-    const hero = document.querySelector('.hero');
-    if (hero) {
-        const heroBottom = hero.offsetTop + hero.offsetHeight;
-        navbar.classList.toggle('visible', scrollY > heroBottom - 80);
-    } else {
-        // No hero section on this page (e.g. guide, team, resources) — show navbar immediately
-        navbar.classList.add('visible');
-    }
+    // Show navbar immediately on all pages
+    navbar.classList.add('visible');
     
     // Navbar background
     navbar.classList.toggle('scrolled', scrollY > 50);
@@ -92,20 +84,29 @@ const handleScroll = rafThrottle(() => {
         backToTop.classList.toggle('show', scrollY > 300);
     }
     
-    // Active nav link
+    // Active nav link - IMPROVED LOGIC
     let current = '';
     for (const section of sections) {
-        if (scrollY >= section.offsetTop - 200) {
+        const sectionTop = section.offsetTop - 100; // 100px offset for navbar
+        const sectionBottom = sectionTop + section.offsetHeight;
+        
+        if (scrollY >= sectionTop && scrollY < sectionBottom) {
             current = section.getAttribute('id');
+            break;
         }
     }
+    
     for (const link of navLinks) {
-        link.classList.toggle('active', link.getAttribute('href') === '#' + current);
+        const href = link.getAttribute('href');
+        if (href && href.includes('#')) {
+            const targetId = href.split('#')[1];
+            link.classList.toggle('active', targetId === current);
+        }
     }
 });
 
 window.addEventListener('scroll', handleScroll, { passive: true });
-handleScroll(); // Initialize navbar state on page load
+handleScroll(); // Initialize
 
 // ---- Smooth Scroll ----
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {

@@ -114,6 +114,7 @@ html {
     margin: 0;
     padding: 0;
     overflow-x: hidden;
+    scroll-padding-top: 100px; /* Offset for fixed navbar */
 }
 
 body {
@@ -149,7 +150,7 @@ a, button, .btn-primary, .btn-secondary, .btn-download, .btn-matrix-dl, .committ
 
 /* Offset for fixed navbar on anchor scroll */
 section[id] {
-    scroll-margin-top: 80px;
+    scroll-margin-top: 100px; /* Ensures sections don't hide under navbar */
 }
 
 /* ==================== TYPOGRAPHY ==================== */

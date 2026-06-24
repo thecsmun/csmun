@@ -543,7 +543,7 @@ function initCommitteeRoad() {
  const W = container.offsetWidth;
  const cardHeight = 420;
  const totalHeight = cardHeight * cards.length + 200;
- 
+
  container.style.minHeight = totalHeight + 'px';
  svg.setAttribute('viewBox', `0 0 ${W} ${totalHeight}`);
  svg.setAttribute('width', W);
@@ -551,7 +551,9 @@ function initCommitteeRoad() {
  svg.style.width = '100%';
  svg.style.height = totalHeight + 'px';
 
- let d = `M ${W * 0.25} 50`;
+ // Road starts top-right, comes straight down then sweeps left
+ const startX = W * 0.72;
+ let d = `M ${startX} 0`;
 
  cards.forEach((card, i) => {
  const yPos = 50 + (i * cardHeight);
@@ -569,23 +571,28 @@ function initCommitteeRoad() {
  card.style.left = 'auto';
  }
 
- const leftX = W * 0.25;
- const rightX = W * 0.75;
+ const leftX = W * 0.22;
+ const rightX = W * 0.78;
+ const currSide = i % 2 === 0 ? leftX : rightX;
+ const currY = yPos + 200;
 
  if (i === 0) {
- d += ` L ${leftX} ${yPos + 150}`;
+ // First card: road comes straight down from top-right
+ // then makes ONE clean sweep to the left card
+ const cp1x = startX;
+ const cp1y = currY * 0.75;
+ const cp2x = startX - (startX - currSide) * 0.4;
+ const cp2y = currY * 0.95;
+ d += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${currSide} ${currY}`;
  } else {
  const prevSide = (i - 1) % 2 === 0 ? leftX : rightX;
- const currSide = i % 2 === 0 ? leftX : rightX;
- const prevY = 50 + ((i - 1) * cardHeight) + 150;
- const currY = yPos + 150;
+ const prevY = 50 + ((i - 1) * cardHeight) + 200;
 
- // Tight S-curve: road stays on its side longer then snaps across
+ // Road goes straight down its side, then ONE sharp sweep across
  const cp1x = prevSide;
- const cp1y = prevY + (currY - prevY) * 0.75;
- const cp2x = currSide;
- const cp2y = prevY + (currY - prevY) * 0.25;
-
+ const cp1y = prevY + (currY - prevY) * 0.88;
+ const cp2x = prevSide + (currSide - prevSide) * 0.15;
+ const cp2y = prevY + (currY - prevY) * 0.92;
  d += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${currSide} ${currY}`;
  }
  });

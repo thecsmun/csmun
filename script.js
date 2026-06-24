@@ -551,8 +551,8 @@ function initCommitteeRoad() {
  svg.style.width = '100%';
  svg.style.height = totalHeight + 'px';
 
- const leftX = W * 0.25;
- const rightX = W * 0.75;
+ const leftX = W * 0.47;
+ const rightX = W * 0.53;
 
  // Road enters from top-right, just like image 2
  let d = `M ${rightX} 0`;
@@ -564,14 +564,14 @@ function initCommitteeRoad() {
 
  card.style.position = 'absolute';
  card.style.top = yPos + 'px';
- card.style.width = '38%';
- card.style.maxWidth = '500px';
+ card.style.width = '42%';
+ card.style.maxWidth = '520px';
 
  if (i % 2 === 0) {
- card.style.left = '4%';
+ card.style.left = '0%';
  card.style.right = 'auto';
  } else {
- card.style.right = '4%';
+ card.style.right = '0%';
  card.style.left = 'auto';
  }
 

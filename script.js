@@ -581,25 +581,37 @@ function initCommitteeRoad() {
             card.style.borderRadius = '1.5rem 0 0 1.5rem';
         }
 
-        // Road connects at bottom center of each half
+       // Road connects at MIDDLE CENTER of each card
         const connectX = isLeft ? cardW / 2 : cardW + cardW / 2;
-        const connectY = yPos + cardH;
+        const connectY = yPos + cardH / 2;
         centers.push({ x: connectX, y: connectY, isLeft });
     });
 
-    // Road starts at bottom center of first card
+    // Road starts at center of first card
     let d = `M ${centers[0].x} ${centers[0].y}`;
 
     for (let i = 0; i < centers.length - 1; i++) {
         const curr = centers[i];
         const next = centers[i + 1];
 
-        // Wide single arc — turn happens at exact center of page
+        const gap = next.y - curr.y;
         const turnX = W / 2;
-        const turnY = curr.y + (next.y - curr.y) * 0.5;
+        const turnY = curr.y + gap * 0.5;
 
-        d += ` C ${curr.x} ${turnY}, ${turnX} ${turnY - 80}, ${turnX} ${turnY}`;
-        d += ` C ${turnX} ${turnY + 80}, ${next.x} ${turnY}, ${next.x} ${next.y}`;
+        // Road leaves card center, arcs to page center with a big curve,
+        // then sweeps into next card center — like a real highway S-bend
+        const cp1x = curr.x;
+        const cp1y = curr.y + gap * 0.25;
+        const cp2x = turnX;
+        const cp2y = turnY - gap * 0.1;
+
+        const cp3x = turnX;
+        const cp3y = turnY + gap * 0.1;
+        const cp4x = next.x;
+        const cp4y = next.y - gap * 0.25;
+
+        d += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${turnX} ${turnY}`;
+        d += ` C ${cp3x} ${cp3y}, ${cp4x} ${cp4y}, ${next.x} ${next.y}`;
     }
 
     const allPaths = ['roadPath', 'roadPathEdge', 'roadPathLeft', 'roadPathRight', 'roadPathDash'];

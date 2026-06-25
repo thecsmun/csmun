@@ -544,6 +544,8 @@ function initCommitteeRoad() {
  const cardHeight = 480;
  const totalHeight = cardHeight * cards.length + 300;
 
+ container.style.height = totalHeight + 'px';
+
  svg.setAttribute('viewBox', `0 0 ${W} ${totalHeight}`);
  svg.setAttribute('width', W);
  svg.setAttribute('height', totalHeight);

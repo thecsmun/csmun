@@ -541,9 +541,9 @@ function initCommitteeRoad() {
 
  function buildPath() {
     const W = container.offsetWidth;
-    const cardW = Math.floor(W * 0.48);
+    const cardW = Math.min(W * 0.4, 560);
     const cardH = 480;
-    const verticalGap = 180;
+    const verticalGap = 150;
     const totalHeight = (cardH + verticalGap) * cards.length + 100;
 
     container.style.height = totalHeight + 'px';
@@ -558,6 +558,7 @@ function initCommitteeRoad() {
     svg.style.left = '0';
     svg.style.pointerEvents = 'none';
 
+    // Position cards flush against the edges and collect road connection points
     const centers = [];
 
     cards.forEach((card, i) => {
@@ -570,18 +571,15 @@ function initCommitteeRoad() {
         card.style.maxWidth = cardW + 'px';
         card.style.zIndex = '2';
 
-        // Flush to absolute screen edges
         if (isLeft) {
             card.style.left = '0px';
             card.style.right = 'auto';
-            card.style.borderRadius = '0 1.5rem 1.5rem 0';
         } else {
             card.style.right = '0px';
             card.style.left = 'auto';
-            card.style.borderRadius = '1.5rem 0 0 1.5rem';
         }
 
-        // Road connects at bottom center of each card
+        // Road connects at BOTTOM CENTER of each card
         const connectX = isLeft ? cardW / 2 : W - cardW / 2;
         const connectY = yPos + cardH;
         centers.push({ x: connectX, y: connectY, isLeft });
@@ -594,15 +592,15 @@ function initCommitteeRoad() {
         const curr = centers[i];
         const next = centers[i + 1];
 
-        // Turn happens RIGHT at page center — behind both cards
-        const turnX = W / 2;
-        const turnY = curr.y + (next.y - curr.y) * 0.5;
+        const c1y = curr.y + (next.y - curr.y) * 0.33;
+        const c2y = curr.y + (next.y - curr.y) * 0.67;
 
-        // Road goes straight down from card bottom,
-        // makes ONE wide arc through dead center of page,
-        // arrives at bottom of next card
-        d += ` C ${curr.x} ${turnY}, ${turnX} ${turnY - (next.y - curr.y) * 0.15}, ${turnX} ${turnY}`;
-        d += ` C ${turnX} ${turnY + (next.y - curr.y) * 0.15}, ${next.x} ${turnY}, ${next.x} ${next.y}`;
+        // Bow the curve hard toward one side, then the other —
+        // a winding, snake-like road instead of a single gentle bend
+        const c1x = curr.isLeft ? W * 0.78 : W * 0.22;
+        const c2x = curr.isLeft ? W * 0.22 : W * 0.78;
+
+        d += ` C ${c1x} ${c1y}, ${c2x} ${c2y}, ${next.x} ${next.y}`;
     }
 
     const allPaths = ['roadPath', 'roadPathEdge', 'roadPathLeft', 'roadPathRight', 'roadPathDash'];

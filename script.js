@@ -540,82 +540,88 @@ function initCommitteeRoad() {
  let pathLength = 0;
 
  function buildPath() {
- const W = container.offsetWidth;
- const cardHeight = 480;
- const totalHeight = cardHeight * cards.length + 300;
+    const W = container.offsetWidth;
+    const cardW = Math.min(W * 0.40, 460);
+    const cardH = 480;
+    const verticalGap = 100;
+    const totalHeight = (cardH + verticalGap) * cards.length + 100;
 
- container.style.height = totalHeight + 'px';
+    container.style.height = totalHeight + 'px';
 
- svg.setAttribute('viewBox', `0 0 ${W} ${totalHeight}`);
- svg.setAttribute('width', W);
- svg.setAttribute('height', totalHeight);
- svg.style.width = '100%';
- svg.style.height = totalHeight + 'px';
- svg.style.position = 'absolute';
- svg.style.top = '0';
- svg.style.left = '0';
- svg.style.pointerEvents = 'none';
+    svg.setAttribute('viewBox', `0 0 ${W} ${totalHeight}`);
+    svg.setAttribute('width', W);
+    svg.setAttribute('height', totalHeight);
+    svg.style.width = '100%';
+    svg.style.height = totalHeight + 'px';
+    svg.style.position = 'absolute';
+    svg.style.top = '0';
+    svg.style.left = '0';
+    svg.style.pointerEvents = 'none';
 
- const leftX = W * 0.38;
- const rightX = W * 0.62;
+    // Position cards and collect their centers
+    const centers = [];
 
- // Road enters from top-right, just like image 2
- let d = `M ${rightX} 0`;
+    cards.forEach((card, i) => {
+        const isLeft = i % 2 === 0;
+        const yPos = i * (cardH + verticalGap) + 40;
 
- cards.forEach((card, i) => {
- const yPos = 80 + (i * cardHeight);
- const currY = yPos + 180;
- const currX = i % 2 === 0 ? leftX : rightX;
+        card.style.position = 'absolute';
+        card.style.top = yPos + 'px';
+        card.style.width = cardW + 'px';
+        card.style.maxWidth = cardW + 'px';
+        card.style.zIndex = '2';
 
- card.style.position = 'absolute';
- card.style.top = yPos + 'px';
- card.style.width = '36%';
- card.style.maxWidth = '480px';
+        if (isLeft) {
+            card.style.left = '0px';
+            card.style.right = 'auto';
+        } else {
+            card.style.right = '0px';
+            card.style.left = 'auto';
+        }
 
- if (i % 2 === 0) {
- card.style.left = '0px';
- card.style.right = 'auto';
- } else {
- card.style.right = '0px';
- card.style.left = 'auto';
- }
+        // Center of each card
+        const centerX = isLeft ? cardW / 2 : W - cardW / 2;
+        const centerY = yPos + cardH / 2;
+        centers.push({ x: centerX, y: centerY });
+    });
 
- if (i === 0) {
- // Comes straight down from top-right, wide smooth arc to left — like image 2
- d += ` C ${rightX} ${currY * 0.7}, ${leftX + (rightX - leftX) * 0.3} ${currY * 0.95}, ${currX} ${currY}`;
- } else {
- const prevX = (i - 1) % 2 === 0 ? leftX : rightX;
- const prevY = 80 + ((i - 1) * cardHeight) + 180;
- const midY = prevY + (currY - prevY) * 0.5;
+    // Build S-curve road from center to center of each card
+    let d = `M ${centers[0].x} ${centers[0].y}`;
 
- // Road stays on its side, then ONE wide sweeping arc across center
- d += ` C ${prevX} ${prevY + (currY - prevY) * 0.8}, ${currX} ${midY}, ${currX} ${currY}`;
- }
- });
+    for (let i = 0; i < centers.length - 1; i++) {
+        const curr = centers[i];
+        const next = centers[i + 1];
+        const midY = (curr.y + next.y) / 2;
 
- const allPaths = ['roadPath', 'roadPathEdge', 'roadPathLeft', 'roadPathRight', 'roadPathDash'];
- allPaths.forEach(id => {
- const el = document.getElementById(id);
- if (el) el.setAttribute('d', d);
- });
+        // S-curve through the center of the page
+        d += ` C ${curr.x} ${midY}, ${next.x} ${midY}, ${next.x} ${next.y}`;
+    }
 
- pathLength = path.getTotalLength();
+    const allPaths = ['roadPath', 'roadPathEdge', 'roadPathLeft', 'roadPathRight', 'roadPathDash'];
+    allPaths.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.setAttribute('d', d);
+    });
 
- // Only animate the main asphalt path drawing
- path.style.strokeDasharray = pathLength;
- path.style.strokeDashoffset = pathLength;
+    pathLength = path.getTotalLength();
 
- // Edge and side lines draw instantly (no animation needed)
- const edgeEl = document.getElementById('roadPathEdge');
- if (edgeEl) {
-     edgeEl.style.strokeDasharray = 'none';
-     edgeEl.style.strokeDashoffset = '0';
- }
- const dashEl = document.getElementById('roadPathDash');
- if (dashEl) {
-     dashEl.style.strokeDashoffset = '0';
- }
- }
+    // Main road draws on scroll
+    path.style.strokeDasharray = pathLength;
+    path.style.strokeDashoffset = pathLength;
+
+    // Edge draws instantly behind road
+    const edgeEl = document.getElementById('roadPathEdge');
+    if (edgeEl) {
+        edgeEl.style.strokeDasharray = 'none';
+        edgeEl.style.strokeDashoffset = '0';
+    }
+
+    // Center dashes always visible
+    const dashEl = document.getElementById('roadPathDash');
+    if (dashEl) {
+        dashEl.style.strokeDashoffset = '0';
+    }
+}
 
  function updateOnScroll() {
  const rect = container.getBoundingClientRect();

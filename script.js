@@ -598,8 +598,21 @@ function initCommitteeRoad() {
  });
 
  pathLength = path.getTotalLength();
+
+ // Only animate the main asphalt path drawing
  path.style.strokeDasharray = pathLength;
  path.style.strokeDashoffset = pathLength;
+
+ // Edge and side lines draw instantly (no animation needed)
+ const edgeEl = document.getElementById('roadPathEdge');
+ if (edgeEl) {
+     edgeEl.style.strokeDasharray = 'none';
+     edgeEl.style.strokeDashoffset = '0';
+ }
+ const dashEl = document.getElementById('roadPathDash');
+ if (dashEl) {
+     dashEl.style.strokeDashoffset = '0';
+ }
  }
 
  function updateOnScroll() {

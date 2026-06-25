@@ -267,15 +267,11 @@
             <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="rgba(0,0,0,0.8)"/>
         </filter>
     </defs>
-    <!-- Road border/kerb -->
-    <path id="roadPathEdge" fill="none" stroke="#555" stroke-width="52" stroke-linecap="round" stroke-linejoin="round" filter="url(#roadShadow)"></path>
-    <!-- Road asphalt surface -->
-    <path id="roadPath" class="road-path" fill="none" stroke="#1a1a1a" stroke-width="44" stroke-linecap="round" stroke-linejoin="round"></path>
-    <!-- Road side lines (white) -->
-    <path id="roadPathLeft" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2" stroke-linecap="round" stroke-dasharray="none"></path>
-    <path id="roadPathRight" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2" stroke-linecap="round" stroke-dasharray="none"></path>
-    <!-- Center dashes (yellow) -->
-    <path id="roadPathDash" fill="none" stroke="#facc15" stroke-width="3" stroke-linecap="round" stroke-dasharray="24 18"></path>
+    <path id="roadPathEdge" class="road-path-edge" filter="url(#roadShadow)"></path>
+    <path id="roadPath" class="road-path"></path>
+    <path id="roadPathLeft" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2" stroke-linecap="round"></path>
+    <path id="roadPathRight" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2" stroke-linecap="round"></path>
+    <path id="roadPathDash" class="road-path-dash"></path>
 </svg>
 
     <div class="committee-card road-card">

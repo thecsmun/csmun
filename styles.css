@@ -3374,6 +3374,25 @@ body.scene-3d {
  opacity: 0.8;
 }
 
+.road-path-edge {
+ fill: none;
+ stroke: #555;
+ stroke-width: 52;
+ stroke-linecap: round;
+ stroke-linejoin: round;
+ opacity: 1;
+}
+
+.road-path-dash {
+ fill: none;
+ stroke: #facc15;
+ stroke-width: 3;
+ stroke-linecap: round;
+ stroke-dasharray: 24 18;
+ stroke-linejoin: round;
+ opacity: 0.8;
+}
+
 .road-card {
  position: absolute;
  z-index: 2;

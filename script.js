@@ -541,9 +541,9 @@ function initCommitteeRoad() {
 
  function buildPath() {
     const W = container.offsetWidth;
-    const cardW = Math.min(W * 0.44, 500);
+    const cardW = Math.min(W * 0.4, 560);
     const cardH = 480;
-    const verticalGap = 120;
+    const verticalGap = 150;
     const totalHeight = (cardH + verticalGap) * cards.length + 100;
 
     container.style.height = totalHeight + 'px';
@@ -558,9 +558,8 @@ function initCommitteeRoad() {
     svg.style.left = '0';
     svg.style.pointerEvents = 'none';
 
-    // Position cards and collect road connection points
+    // Position cards flush against the edges and collect road connection points
     const centers = [];
-    const edgeGap = 20;
 
     cards.forEach((card, i) => {
         const isLeft = i % 2 === 0;
@@ -593,17 +592,15 @@ function initCommitteeRoad() {
         const curr = centers[i];
         const next = centers[i + 1];
 
-        // Turn happens exactly at page center horizontally
-        const turnX = W / 2;
+        const c1y = curr.y + (next.y - curr.y) * 0.33;
+        const c2y = curr.y + (next.y - curr.y) * 0.67;
 
-        // Turn Y is midway between the two cards — behind both cards
-        const turnY = curr.y + (next.y - curr.y) * 0.5;
+        // Bow the curve hard toward one side, then the other —
+        // a winding, snake-like road instead of a single gentle bend
+        const c1x = curr.isLeft ? W * 0.78 : W * 0.22;
+        const c2x = curr.isLeft ? W * 0.22 : W * 0.78;
 
-        // Road goes down from bottom of curr card,
-        // makes a wide curve through center of page,
-        // arrives at bottom of next card
-        d += ` C ${curr.x} ${turnY}, ${turnX} ${turnY}, ${turnX} ${turnY}`;
-        d += ` C ${turnX} ${turnY}, ${next.x} ${turnY}, ${next.x} ${next.y}`;
+        d += ` C ${c1x} ${c1y}, ${c2x} ${c2y}, ${next.x} ${next.y}`;
     }
 
     const allPaths = ['roadPath', 'roadPathEdge', 'roadPathLeft', 'roadPathRight', 'roadPathDash'];

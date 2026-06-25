@@ -1,4 +1,3 @@
-
 console.log('%c🇺🇳 CSMUN 2026 | Deliberate. Decide. Deliver.', 'font-size:24px;font-weight:bold;color:#facc15;');
 console.log('%cBuilt with ❤️ by Sailesh, Jaswanth, Vedansh and Rishith', 'font-size:14px;color:#99a1af;');
 console.log('%c🐛 Found something broken? Congrats — you\'re now QA. Fix it or tweet at us.', 'font-size:12px;color:#6b7280;font-style:italic;');

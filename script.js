@@ -541,9 +541,9 @@ function initCommitteeRoad() {
 
  function buildPath() {
     const W = container.offsetWidth;
-    const cardW = Math.min(W * 0.35, 420);
+    const cardW = Math.min(W * 0.38, 440);
     const cardH = 480;
-    const verticalGap = 160;
+    const verticalGap = 200;
     const totalHeight = (cardH + verticalGap) * cards.length + 100;
 
     container.style.height = totalHeight + 'px';
@@ -558,8 +558,9 @@ function initCommitteeRoad() {
     svg.style.left = '0';
     svg.style.pointerEvents = 'none';
 
-    // Position cards and collect their centers
+    // Position cards and collect road connection points
     const centers = [];
+    const edgeGap = 20;
 
     cards.forEach((card, i) => {
         const isLeft = i % 2 === 0;
@@ -572,29 +573,35 @@ function initCommitteeRoad() {
         card.style.zIndex = '2';
 
         if (isLeft) {
-            card.style.left = '0px';
+            card.style.left = edgeGap + 'px';
             card.style.right = 'auto';
         } else {
-            card.style.right = '0px';
+            card.style.right = edgeGap + 'px';
             card.style.left = 'auto';
         }
 
-        // Center of each card
-        const centerX = isLeft ? cardW / 2 : W - cardW / 2;
-        const centerY = yPos + cardH / 2;
-        centers.push({ x: centerX, y: centerY });
+        // Road connects at inner edge of each card (not center)
+        const connectX = isLeft
+            ? edgeGap + cardW        // right edge of left card
+            : W - edgeGap - cardW;   // left edge of right card
+        const connectY = yPos + cardH / 2;
+        centers.push({ x: connectX, y: connectY, isLeft });
     });
 
-    // Build S-curve road from center to center of each card
+    // Build wide sweeping road curves like real highway bends
     let d = `M ${centers[0].x} ${centers[0].y}`;
 
     for (let i = 0; i < centers.length - 1; i++) {
         const curr = centers[i];
         const next = centers[i + 1];
-        const midY = (curr.y + next.y) / 2;
 
-        // S-curve through the center of the page
-        d += ` C ${curr.x} ${midY}, ${next.x} ${midY}, ${next.x} ${next.y}`;
+        // Road sweeps wide to opposite side before connecting to next card
+        // This creates the long graceful bend like in the reference image
+        const sweepX = curr.isLeft ? W * 0.85 : W * 0.15;
+        const quarterY = curr.y + (next.y - curr.y) * 0.3;
+        const threeQuarterY = curr.y + (next.y - curr.y) * 0.7;
+
+        d += ` C ${sweepX} ${quarterY}, ${sweepX} ${threeQuarterY}, ${next.x} ${next.y}`;
     }
 
     const allPaths = ['roadPath', 'roadPathEdge', 'roadPathLeft', 'roadPathRight', 'roadPathDash'];

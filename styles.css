@@ -3333,8 +3333,7 @@ body.scene-3d {
  width: 100%;
  margin: 0 auto;
  padding: 3rem 0 5rem;
- overflow: visible;
- min-height: 2800px; /* Will be set dynamically by JS */
+ overflow: hidden;
 }
 
 .road-svg {
@@ -3389,13 +3388,7 @@ body.scene-3d {
  z-index: 3;
 }
 
-.road-left {
- /* Positioned by JS */
-}
 
-.road-right {
- /* Positioned by JS */
-}
 
 @media (max-width: 768px) {
  .committees-road {

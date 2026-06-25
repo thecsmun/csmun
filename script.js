@@ -572,19 +572,19 @@ function initCommitteeRoad() {
         card.style.maxWidth = cardW + 'px';
         card.style.zIndex = '2';
 
-        // Push cards to absolute edges — no gap
+        // Push cards to absolute edges — just scrollbar + 10px space
         if (isLeft) {
-            card.style.left = '0px';
+            card.style.left = '10px';
             card.style.right = 'auto';
         } else {
-            card.style.right = '0px';
+            card.style.right = '18px';
             card.style.left = 'auto';
         }
 
         // Road connects at BOTTOM CENTER of each card
         const connectX = isLeft
-            ? cardW / 2              // center of left card
-            : W - cardW / 2;         // center of right card
+            ? 10 + cardW / 2              // center of left card
+            : W - 18 - cardW / 2;         // center of right card
         const connectY = yPos + cardH; // bottom of card
         centers.push({ x: connectX, y: connectY, isLeft });
     });

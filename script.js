@@ -541,9 +541,9 @@ function initCommitteeRoad() {
 
  function buildPath() {
     const W = container.offsetWidth;
-    const cardW = Math.min(W * 0.4, 560);
+    const cardW = Math.floor(W / 2);
     const cardH = 480;
-    const verticalGap = 150;
+    const verticalGap = 180;
     const totalHeight = (cardH + verticalGap) * cards.length + 100;
 
     container.style.height = totalHeight + 'px';
@@ -558,7 +558,6 @@ function initCommitteeRoad() {
     svg.style.left = '0';
     svg.style.pointerEvents = 'none';
 
-    // Position cards flush against the edges and collect road connection points
     const centers = [];
 
     cards.forEach((card, i) => {
@@ -571,36 +570,48 @@ function initCommitteeRoad() {
         card.style.maxWidth = cardW + 'px';
         card.style.zIndex = '2';
 
+        // Truly flush — left card at x=0, right card at x=W/2
         if (isLeft) {
             card.style.left = '0px';
             card.style.right = 'auto';
+            card.style.borderRadius = '0 1.5rem 1.5rem 0';
         } else {
-            card.style.right = '0px';
-            card.style.left = 'auto';
+            card.style.left = cardW + 'px';
+            card.style.right = 'auto';
+            card.style.borderRadius = '1.5rem 0 0 1.5rem';
         }
 
-        // Road connects at BOTTOM CENTER of each card
-        const connectX = isLeft ? cardW / 2 : W - cardW / 2;
-        const connectY = yPos + cardH;
+       // Road connects at MIDDLE CENTER of each card
+        const connectX = isLeft ? cardW / 2 : cardW + cardW / 2;
+        const connectY = yPos + cardH / 2;
         centers.push({ x: connectX, y: connectY, isLeft });
     });
 
-    // Road starts at bottom center of first card
+    // Road starts at center of first card
     let d = `M ${centers[0].x} ${centers[0].y}`;
 
     for (let i = 0; i < centers.length - 1; i++) {
         const curr = centers[i];
         const next = centers[i + 1];
 
-        const c1y = curr.y + (next.y - curr.y) * 0.33;
-        const c2y = curr.y + (next.y - curr.y) * 0.67;
+        const gap = next.y - curr.y;
+        const turnX = W / 2;
+        const turnY = curr.y + gap * 0.5;
 
-        // Bow the curve hard toward one side, then the other —
-        // a winding, snake-like road instead of a single gentle bend
-        const c1x = curr.isLeft ? W * 0.78 : W * 0.22;
-        const c2x = curr.isLeft ? W * 0.22 : W * 0.78;
+        // Road leaves card center, arcs to page center with a big curve,
+        // then sweeps into next card center — like a real highway S-bend
+        const cp1x = curr.x;
+        const cp1y = curr.y + gap * 0.25;
+        const cp2x = turnX;
+        const cp2y = turnY - gap * 0.1;
 
-        d += ` C ${c1x} ${c1y}, ${c2x} ${c2y}, ${next.x} ${next.y}`;
+        const cp3x = turnX;
+        const cp3y = turnY + gap * 0.1;
+        const cp4x = next.x;
+        const cp4y = next.y - gap * 0.25;
+
+        d += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${turnX} ${turnY}`;
+        d += ` C ${cp3x} ${cp3y}, ${cp4x} ${cp4y}, ${next.x} ${next.y}`;
     }
 
     const allPaths = ['roadPath', 'roadPathEdge', 'roadPathLeft', 'roadPathRight', 'roadPathDash'];

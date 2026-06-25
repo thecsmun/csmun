@@ -541,9 +541,9 @@ function initCommitteeRoad() {
 
  function buildPath() {
     const W = container.offsetWidth;
-    const cardW = Math.min(W * 0.42, 480);
+    const cardW = Math.min(W * 0.44, 500);
     const cardH = 480;
-    const verticalGap = 60;
+    const verticalGap = 120;
     const totalHeight = (cardH + verticalGap) * cards.length + 100;
 
     container.style.height = totalHeight + 'px';
@@ -572,37 +572,38 @@ function initCommitteeRoad() {
         card.style.maxWidth = cardW + 'px';
         card.style.zIndex = '2';
 
-        // Push cards to absolute edges — just scrollbar + 10px space
         if (isLeft) {
-            card.style.left = '10px';
+            card.style.left = '0px';
             card.style.right = 'auto';
         } else {
-            card.style.right = '18px';
+            card.style.right = '0px';
             card.style.left = 'auto';
         }
 
         // Road connects at BOTTOM CENTER of each card
-        const connectX = isLeft
-            ? 10 + cardW / 2              // center of left card
-            : W - 18 - cardW / 2;         // center of right card
-        const connectY = yPos + cardH; // bottom of card
+        const connectX = isLeft ? cardW / 2 : W - cardW / 2;
+        const connectY = yPos + cardH;
         centers.push({ x: connectX, y: connectY, isLeft });
     });
 
-    // Road starts below first card, sweeps under each card to next
+    // Road starts at bottom center of first card
     let d = `M ${centers[0].x} ${centers[0].y}`;
 
     for (let i = 0; i < centers.length - 1; i++) {
         const curr = centers[i];
         const next = centers[i + 1];
 
-        // Road dips down then sweeps across under the gap between cards
-        const dip1Y = curr.y + verticalGap * 0.4;
-        const dip2Y = next.y - verticalGap * 0.4;
-        const sweepX = curr.isLeft ? W * 0.8 : W * 0.2;
+        // Turn happens exactly at page center horizontally
+        const turnX = W / 2;
 
-        d += ` C ${curr.x} ${dip1Y}, ${sweepX} ${dip1Y + (dip2Y - dip1Y) * 0.5}, ${sweepX} ${dip2Y}`;
-        d += ` C ${sweepX} ${dip2Y}, ${next.x} ${dip2Y}, ${next.x} ${next.y}`;
+        // Turn Y is midway between the two cards — behind both cards
+        const turnY = curr.y + (next.y - curr.y) * 0.5;
+
+        // Road goes down from bottom of curr card,
+        // makes a wide curve through center of page,
+        // arrives at bottom of next card
+        d += ` C ${curr.x} ${turnY}, ${turnX} ${turnY}, ${turnX} ${turnY}`;
+        d += ` C ${turnX} ${turnY}, ${next.x} ${turnY}, ${next.x} ${next.y}`;
     }
 
     const allPaths = ['roadPath', 'roadPathEdge', 'roadPathLeft', 'roadPathRight', 'roadPathDash'];

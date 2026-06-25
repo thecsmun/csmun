@@ -541,9 +541,9 @@ function initCommitteeRoad() {
 
  function buildPath() {
     const W = container.offsetWidth;
-    const cardW = Math.min(W * 0.40, 460);
+    const cardW = Math.min(W * 0.35, 420);
     const cardH = 480;
-    const verticalGap = 100;
+    const verticalGap = 160;
     const totalHeight = (cardH + verticalGap) * cards.length + 100;
 
     container.style.height = totalHeight + 'px';

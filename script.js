@@ -908,6 +908,62 @@ if (enterBtn) {
         });
     }, { rootMargin: '200px 0px' });
     lazyImages.forEach(img => imageObserver.observe(img));
+})();
+
+// ==================== BIO READ MORE MODAL ====================
+(function() {
+    const modal = document.getElementById('bioModal');
+    const modalImg = document.getElementById('bioModalImg');
+    const modalRole = document.getElementById('bioModalRole');
+    const modalName = document.getElementById('bioModalName');
+    const modalBio = document.getElementById('bioModalBio');
+    const closeBtn = document.getElementById('bioModalClose');
+
+    if (!modal) return;
+
+    function closeModal() {
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    closeBtn.addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+    });
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeModal();
+    });
+
+    document.querySelectorAll('.bio').forEach(bio => {
+        const fullText = bio.textContent.trim();
+        if (fullText.length <= 80) return;
+
+        bio.dataset.fullbio = fullText;
+        bio.textContent = fullText.substring(0, 80) + '...';
+
+        const btn = document.createElement('button');
+        btn.className = 'read-more-btn';
+        btn.textContent = 'Read more';
+        bio.insertAdjacentElement('afterend', btn);
+
+        btn.addEventListener('click', () => {
+            const card = bio.closest('.eb-card, .secretariat-card');
+            if (!card) return;
+
+            const img = card.querySelector('img');
+            const role = card.querySelector('h4, h3');
+            const name = card.querySelector('.name');
+
+            modalImg.src = img ? img.src : '';
+            modalImg.alt = img ? img.alt : '';
+            modalRole.textContent = role ? role.textContent.trim() : '';
+            modalName.textContent = name ? name.textContent.trim() : '';
+            modalBio.textContent = fullText;
+
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        });
+    });
 })();// ==================== FIX INFINITE SCROLL ====================
 (function fixOverflow() {
     document.documentElement.style.overflowX = 'hidden';

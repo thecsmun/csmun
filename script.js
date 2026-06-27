@@ -571,22 +571,27 @@ function initCommitteeRoad() {
         card.style.zIndex = '2';
 
         // Truly flush — left card at x=0, right card at x=W/2
+        const margin = W * 0.08;
+        const cardWidth = W * 0.42;
+        card.style.width = cardWidth + 'px';
+        card.style.maxWidth = cardWidth + 'px';
+        card.style.borderRadius = '1.5rem';
+        card.style.boxSizing = 'border-box';
+        card.style.overflow = 'hidden';
+
         if (isLeft) {
-            card.style.left = '0px';
+            card.style.left = margin + 'px';
             card.style.right = 'auto';
-            card.style.borderRadius = '0 1.5rem 1.5rem 0';
         } else {
-            card.style.left = cardW + 'px';
-            card.style.right = 'auto';
-            card.style.borderRadius = '1.5rem 0 0 1.5rem';
+            card.style.left = 'auto';
+            card.style.right = margin + 'px';
         }
 
-       const connectX = isLeft ? 0 : W;
+       const connectX = isLeft ? W * 0.08 : W * 0.92;
         const connectY = yPos + cardH / 2;
         centers.push({ x: connectX, y: connectY, isLeft });
     });
 
-   // Road starts at outer left edge of first card
     let d = `M ${centers[0].x} ${centers[0].y}`;
 
     for (let i = 0; i < centers.length - 1; i++) {
@@ -594,11 +599,11 @@ function initCommitteeRoad() {
         const next = centers[i + 1];
         const gap = next.y - curr.y;
 
-        const cp1x = curr.isLeft ? W * 0.05 : W * 0.95;
-        const cp1y = curr.y + gap * 0.6;
+        const cp1x = curr.isLeft ? W * 0.4 : W * 0.6;
+        const cp1y = curr.y + gap * 0.35;
 
-        const cp2x = next.isLeft ? W * 0.05 : W * 0.95;
-        const cp2y = next.y - gap * 0.6;
+        const cp2x = next.isLeft ? W * 0.4 : W * 0.6;
+        const cp2y = next.y - gap * 0.35;
 
         d += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${next.x} ${next.y}`;
     }

@@ -594,11 +594,11 @@ function initCommitteeRoad() {
         const next = centers[i + 1];
         const gap = next.y - curr.y;
 
-        const cp1x = curr.isLeft ? W * 0.15 : W * 0.85;
-        const cp1y = curr.y + gap * 0.35;
+        const cp1x = curr.isLeft ? W * 0.05 : W * 0.95;
+        const cp1y = curr.y + gap * 0.6;
 
-        const cp2x = next.isLeft ? W * 0.15 : W * 0.85;
-        const cp2y = next.y - gap * 0.35;
+        const cp2x = next.isLeft ? W * 0.05 : W * 0.95;
+        const cp2y = next.y - gap * 0.6;
 
         d += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${next.x} ${next.y}`;
     }

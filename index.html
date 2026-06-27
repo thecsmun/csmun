@@ -246,106 +246,193 @@
     </div>
 </section>
 
-<!-- Committees Section -->
-<section id="committees" class="committees-section reveal" style="overflow:hidden;">
- <!-- Diplomacy Visual as section background -->
- <div class="diplomacy-bg">
- <img src="https://images.unsplash.com/photo-1541873676-a18131494184?q=80&w=1200" alt="" class="diplomacy-bg-img" loading="lazy" aria-hidden="true">
- <div class="diplomacy-bg-overlay"></div>
- </div>
- <div class="container">
- <h2 class="section-title">Our Committees</h2>
- <div class="committee-quote">
- <span class="committee-quote-mark">&ldquo;</span>
- <p class="committee-quote-text">The UN was not created to take mankind to heaven, but to save humanity from hell.</p>
- <span class="committee-quote-attribution">&mdash; Dag Hammarskjöld</span>
- </div>
- <div class="committees-road" id="committeesRoad">
-    <svg class="road-svg" id="roadSvg" style="overflow:hidden;">
-    <defs>
-        <filter id="roadShadow" x="-20%" y="-20%" width="140%" height="140%">
-            <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="rgba(0,0,0,0.8)"/>
-        </filter>
-    </defs>
-    <path id="roadPathEdge" class="road-path-edge" filter="url(#roadShadow)"></path>
-    <path id="roadPath" class="road-path"></path>
-    <path id="roadPathLeft" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2" stroke-linecap="round"></path>
-    <path id="roadPathRight" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2" stroke-linecap="round"></path>
-    <path id="roadPathDash" class="road-path-dash"></path>
-</svg>
-
-    <div class="committee-card road-card">
-        <img loading="lazy" src="images/committees/unsc.png" alt="UNSC" class="committee-img">
-        <h3>UNSC</h3>
-        <h4>United Nations Security Council</h4>
-        <p><strong>Agenda:</strong> Deliberation on the Legal Status of Non-State Armed Groups and Their Impact on International Peace and Security</p>
-        <p>As one of the six principal organs of the United Nations, the UNSC is entrusted with maintaining global peace and security, addressing international conflicts, and upholding the principles of the UN Charter.</p>
-        <span class="btn-download btn-coming-soon">
-            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:middle;margin-right:6px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            Coming Soon
-        </span>
+<section id="committees" class="committees-section reveal">
+  <div class="diplomacy-bg">
+    <img src="https://images.unsplash.com/photo-1541873676-a18131494184?q=80&w=1200" alt="" class="diplomacy-bg-img" loading="lazy" aria-hidden="true">
+    <div class="diplomacy-bg-overlay"></div>
+  </div>
+  <div class="container">
+    <h2 class="section-title">Our Committees</h2>
+    <div class="committee-quote">
+      <span class="committee-quote-mark">&ldquo;</span>
+      <p class="committee-quote-text">The UN was not created to take mankind to heaven, but to save humanity from hell.</p>
+      <span class="committee-quote-attribution">&mdash; Dag Hammarskjöld</span>
     </div>
+  </div>
 
-    <div class="committee-card road-card">
-        <img loading="lazy" src="images/committees/UNHRC.png" alt="UNHRC" class="committee-img">
-        <h3>UNHRC</h3>
-        <h4>United Nations Human Rights Council</h4>
-        <p><strong>Agenda:</strong> Special Session: Addressing the escalating humanitarian crisis in the Middle East, with focus on protection of human rights at sea within the Strait of Hormuz</p>
-        <p>The principal United Nations body dedicated to the promotion and protection of human rights, working to address violations and advance fundamental freedoms.</p>
-        <span class="btn-download btn-coming-soon">
-            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:middle;margin-right:6px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            Coming Soon
-        </span>
-    </div>
+  <div class="highway-scene" id="highwayScene">
+    <div class="highway-fog highway-fog--top"></div>
+    <div class="highway-fog highway-fog--bottom"></div>
+    <div class="highway-headlights"></div>
 
-    <div class="committee-card road-card">
-        <img loading="lazy" src="images/committees/disec.png" alt="DISEC" class="committee-img">
-        <h3>DISEC</h3>
-        <h4>Disarmament and International Security Committee</h4>
-        <p><strong>Agenda:</strong> Examining the Impact of Foreign Military Intervention and Proxy Warfare as its Complex, on International Peace and Security with light on repercussions faced in events from the recent past</p>
-        <p>The First Committee of the UN General Assembly, serving as a global forum for addressing international security, arms control, and disarmament.</p>
-        <span class="btn-download btn-coming-soon">
-            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:middle;margin-right:6px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            Coming Soon
-        </span>
-    </div>
+    <canvas class="highway-canvas" id="highwayCanvas"></canvas>
 
-    <div class="committee-card road-card">
-        <img loading="lazy" src="images/committees/loksabha.png" alt="Lok Sabha" class="committee-img">
-        <h3>LOK SABHA</h3>
-        <h4>House of the People</h4>
-        <p><strong>Agenda:</strong> Deliberation upon the implementation of the Uniform Civil Code (UCC) and its implications on Federalism and Customary Laws across India.</p>
-        <p>The lower house of the Parliament of India, responsible for debating national issues, formulating laws, and shaping public policy.</p>
-        <span class="btn-download btn-coming-soon">
-            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:middle;margin-right:6px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            Coming Soon
-        </span>
-    </div>
+    <div class="highway-stops" id="highwayStops">
 
-    <div class="committee-card road-card">
-        <img loading="lazy" src="images/committees/ip.png" alt="International Press" class="committee-img">
-        <h3>IP</h3>
-        <h4>International Press</h4>
-        <p><strong>Agenda:</strong> Reporting, Journalism, Photography, and Media Coverage</p>
-        <p>The voice of journalism within the conference, documenting proceedings and fostering transparency through accurate coverage.</p>
-        <span class="btn-download btn-coming-soon">
-            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:middle;margin-right:6px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            Coming Soon
-        </span>
-    </div>
+      <!-- 01 UNSC -->
+      <div class="hw-stop hw-stop--left" data-index="0">
+        <div class="hw-exit-ramp hw-exit-ramp--left"></div>
+        <div class="hw-card">
+          <div class="hw-card__exit-badge">EXIT 01</div>
+          <div class="hw-card__img-wrap">
+            <img loading="lazy" src="images/committees/unsc.png" alt="UNSC" class="hw-card__img">
+            <div class="hw-card__img-glow"></div>
+          </div>
+          <div class="hw-card__abbr">UNSC</div>
+          <div class="hw-card__name">United Nations Security Council</div>
+          <div class="hw-card__divider"></div>
+          <div class="hw-card__agenda">
+            <span class="hw-card__agenda-label">AGENDA</span>
+            Deliberation on the Legal Status of Non-State Armed Groups and Their Impact on International Peace and Security
+          </div>
+          <div class="hw-card__desc">The most powerful UN organ, entrusted with maintaining global peace and security.</div>
+          <div class="hw-card__footer">
+            <span class="hw-card__level hw-card__level--hard">Advanced</span>
+            <span class="hw-card__btn">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Coming Soon
+            </span>
+          </div>
+        </div>
+      </div>
 
-    <div class="committee-card road-card">
-        <img loading="lazy" src="images/committees/ipl.png" alt="BCCI" class="committee-img">
-        <h3>BCCI</h3>
-        <h4>Board of Control for Cricket in India Committee</h4>
-        <p><strong>Agenda:</strong> Discussing the need for the formulation of a strict code of conduct regarding on-field altercations between players and the digital accountability of young cricketers.</p>
-        <p>Exploring the intersection of sports, governance, business, and public policy in the world's most celebrated cricket board.</p>
-        <span class="btn-download btn-coming-soon">
-            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:middle;margin-right:6px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            Coming Soon
-        </span>
+      <!-- 02 UNHRC -->
+      <div class="hw-stop hw-stop--right" data-index="1">
+        <div class="hw-exit-ramp hw-exit-ramp--right"></div>
+        <div class="hw-card">
+          <div class="hw-card__exit-badge">EXIT 02</div>
+          <div class="hw-card__img-wrap">
+            <img loading="lazy" src="images/committees/UNHRC.png" alt="UNHRC" class="hw-card__img">
+            <div class="hw-card__img-glow"></div>
+          </div>
+          <div class="hw-card__abbr">UNHRC</div>
+          <div class="hw-card__name">United Nations Human Rights Council</div>
+          <div class="hw-card__divider"></div>
+          <div class="hw-card__agenda">
+            <span class="hw-card__agenda-label">AGENDA</span>
+            Special Session: Addressing the escalating humanitarian crisis in the Middle East, with focus on the Strait of Hormuz
+          </div>
+          <div class="hw-card__desc">Promoting and protecting fundamental human rights and freedoms worldwide.</div>
+          <div class="hw-card__footer">
+            <span class="hw-card__level hw-card__level--mid">Intermediate</span>
+            <span class="hw-card__btn">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Coming Soon
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 03 DISEC -->
+      <div class="hw-stop hw-stop--left" data-index="2">
+        <div class="hw-exit-ramp hw-exit-ramp--left"></div>
+        <div class="hw-card">
+          <div class="hw-card__exit-badge">EXIT 03</div>
+          <div class="hw-card__img-wrap">
+            <img loading="lazy" src="images/committees/disec.png" alt="DISEC" class="hw-card__img">
+            <div class="hw-card__img-glow"></div>
+          </div>
+          <div class="hw-card__abbr">DISEC</div>
+          <div class="hw-card__name">Disarmament & International Security</div>
+          <div class="hw-card__divider"></div>
+          <div class="hw-card__agenda">
+            <span class="hw-card__agenda-label">AGENDA</span>
+            Examining the Impact of Foreign Military Intervention and Proxy Warfare on International Peace and Security
+          </div>
+          <div class="hw-card__desc">The First Committee tackling arms control, disarmament and global security.</div>
+          <div class="hw-card__footer">
+            <span class="hw-card__level hw-card__level--mid">Intermediate</span>
+            <span class="hw-card__btn">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Coming Soon
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 04 LOK SABHA -->
+      <div class="hw-stop hw-stop--right" data-index="3">
+        <div class="hw-exit-ramp hw-exit-ramp--right"></div>
+        <div class="hw-card">
+          <div class="hw-card__exit-badge">EXIT 04</div>
+          <div class="hw-card__img-wrap">
+            <img loading="lazy" src="images/committees/loksabha.png" alt="Lok Sabha" class="hw-card__img">
+            <div class="hw-card__img-glow"></div>
+          </div>
+          <div class="hw-card__abbr">LOK SABHA</div>
+          <div class="hw-card__name">House of the People</div>
+          <div class="hw-card__divider"></div>
+          <div class="hw-card__agenda">
+            <span class="hw-card__agenda-label">AGENDA</span>
+            Deliberation upon the Uniform Civil Code (UCC) and its implications on Federalism and Customary Laws
+          </div>
+          <div class="hw-card__desc">India's lower house of Parliament — shaping national legislation and policy.</div>
+          <div class="hw-card__footer">
+            <span class="hw-card__level hw-card__level--easy">Open</span>
+            <span class="hw-card__btn">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Coming Soon
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 05 IP -->
+      <div class="hw-stop hw-stop--left" data-index="4">
+        <div class="hw-exit-ramp hw-exit-ramp--left"></div>
+        <div class="hw-card">
+          <div class="hw-card__exit-badge">EXIT 05</div>
+          <div class="hw-card__img-wrap">
+            <img loading="lazy" src="images/committees/ip.png" alt="IP" class="hw-card__img">
+            <div class="hw-card__img-glow"></div>
+          </div>
+          <div class="hw-card__abbr">IP</div>
+          <div class="hw-card__name">International Press</div>
+          <div class="hw-card__divider"></div>
+          <div class="hw-card__agenda">
+            <span class="hw-card__agenda-label">AGENDA</span>
+            Reporting, Journalism, Photography, and Media Coverage of the Conference
+          </div>
+          <div class="hw-card__desc">The voice of journalism — documenting proceedings and fostering transparency.</div>
+          <div class="hw-card__footer">
+            <span class="hw-card__level hw-card__level--easy">Open</span>
+            <span class="hw-card__btn">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Coming Soon
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 06 BCCI -->
+      <div class="hw-stop hw-stop--right" data-index="5">
+        <div class="hw-exit-ramp hw-exit-ramp--right"></div>
+        <div class="hw-card">
+          <div class="hw-card__exit-badge">EXIT 06</div>
+          <div class="hw-card__img-wrap">
+            <img loading="lazy" src="images/committees/ipl.png" alt="BCCI" class="hw-card__img">
+            <div class="hw-card__img-glow"></div>
+          </div>
+          <div class="hw-card__abbr">BCCI</div>
+          <div class="hw-card__name">Board of Control for Cricket in India</div>
+          <div class="hw-card__divider"></div>
+          <div class="hw-card__agenda">
+            <span class="hw-card__agenda-label">AGENDA</span>
+            Formulating a strict code of conduct on on-field altercations and digital accountability of young cricketers
+          </div>
+          <div class="hw-card__desc">Sports, governance, business and public policy in cricket's biggest board.</div>
+          <div class="hw-card__footer">
+            <span class="hw-card__level hw-card__level--easy">Open</span>
+            <span class="hw-card__btn">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Coming Soon
+            </span>
+          </div>
+        </div>
+      </div>
+
     </div>
-</div>
+  </div>
 </section>
 
     <!-- Photo Gallery -->

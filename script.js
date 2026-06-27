@@ -455,206 +455,259 @@ if (!isMobile) {
 }
 
 
-// ==================== HORIZONTAL SCROLLING ROADMAP ==================== 
+// ============================================================
+// HIGHWAY CANVAS ROAD — Proper S-curve road with lanes
+// ============================================================
+(function initHighwayRoad() {
 
-const roadmapSection = document.querySelector('.committees-roadmap-section');
-const roadmapWrapper = roadmapSection ? document.getElementById('roadmapWrapper') : null;
-const roadmapTrack = roadmapSection ? document.getElementById('roadmapTrack') : null;
-const roadmapCards = roadmapSection ? document.querySelectorAll('.roadmap-card') : [];
-const roadmapProgress = roadmapSection ? document.getElementById('roadmapProgress') : null;
-const scrollHint = roadmapSection ? document.getElementById('scrollHint') : null;
+  const canvas = document.getElementById('highwayCanvas');
+  const scene  = document.getElementById('highwayScene');
+  if (!canvas || !scene) return;
 
-if (roadmapSection && roadmapTrack && roadmapCards && roadmapCards.length > 0) {
- const totalCards = roadmapCards.length;
- 
- function updateRoadmap() {
- const sectionTop = roadmapSection.offsetTop;
- const sectionHeight = roadmapSection.offsetHeight;
- const scrollY = window.scrollY;
- 
- // Calculate scroll progress through the section
- const scrollProgress = (scrollY - sectionTop) / sectionHeight;
- const clampedProgress = Math.max(0, Math.min(1, scrollProgress));
- 
- // Update progress bar
- if (roadmapProgress) {
- roadmapProgress.style.width = (clampedProgress * 100) + '%';
- }
- 
- // Hide scroll hint after first scroll
- if (scrollHint && clampedProgress > 0.05) {
- scrollHint.classList.add('hidden');
- }
- 
- // Calculate which card should be active
- const activeIndex = Math.floor(clampedProgress * totalCards);
- const clampedIndex = Math.min(activeIndex, totalCards - 1);
- 
- // Horizontal scroll distance with HAIRPIN BENDS
- // Cards 0-2 move left, card 3 turns back right, cards 4-5 move left again
- let translateX = 0;
- 
- if (clampedIndex === 0) {
- translateX = 0;
- } else if (clampedIndex === 1) {
- translateX = -100; // Move left
- } else if (clampedIndex === 2) {
- translateX = -200; // Continue left
- } else if (clampedIndex === 3) {
- translateX = -150; // HAIRPIN BEND - move back right
- } else if (clampedIndex === 4) {
- translateX = -250; // Move left again
- } else if (clampedIndex === 5) {
- translateX = -350; // Final position
- }
- 
- roadmapTrack.style.transform = `translateX(${translateX}vw)`;
- 
- // Set active card
- roadmapCards.forEach((card, index) => {
- if (index === clampedIndex) {
- card.classList.add('active');
- } else {
- card.classList.remove('active');
- }
- });
- }
- 
- // Throttled scroll handler
- const handleRoadmapScroll = rafThrottle(updateRoadmap);
- window.addEventListener('scroll', handleRoadmapScroll, { passive: true });
- 
- // Initialize on load
- updateRoadmap();
-}
+  const ctx = canvas.getContext('2d');
+  let W, H, animFrame;
 
-function initCommitteeRoad() {
- const container = document.getElementById('committeesRoad');
- const svg = document.getElementById('roadSvg');
- const path = document.getElementById('roadPath');
- if (!container || !svg || !path) return;
+  // ── Scroll-reveal for cards ──
+  const cards = document.querySelectorAll('.hw-card');
+  const cardObserver = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('in-view');
+        cardObserver.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.2 });
+  cards.forEach(c => cardObserver.observe(c));
 
- const cards = container.querySelectorAll('.road-card');
- if (!cards.length) return;
+  // ── Resize canvas ──
+  function resize() {
+    W = canvas.width  = scene.offsetWidth;
+    H = canvas.height = scene.offsetHeight;
+    draw();
+  }
 
- let pathLength = 0;
+  // ── Build S-curve waypoints ──
+  function getWaypoints() {
+    const stops = document.querySelectorAll('.hw-stop');
+    const pts = [];
+    pts.push({ x: W * 0.5, y: -50 });
 
- function buildPath() {
-    const W = container.offsetWidth;
-    const cardW = Math.floor(W / 2);
-    const cardH = 480;
-    const verticalGap = 180;
-    const totalHeight = (cardH + verticalGap) * cards.length + 100;
+    stops.forEach((stop, i) => {
+      const rect = stop.getBoundingClientRect();
+      const sceneRect = scene.getBoundingClientRect();
+      const cy = rect.top - sceneRect.top + rect.height * 0.5;
+      const isLeft = stop.classList.contains('hw-stop--left');
+      const roadX = isLeft ? W * 0.62 : W * 0.38;
+      pts.push({ x: roadX, y: cy });
+    });
 
-    container.style.height = totalHeight + 'px';
+    pts.push({ x: W * 0.5, y: H + 50 });
+    return pts;
+  }
 
-    svg.setAttribute('viewBox', `0 0 ${W} ${totalHeight}`);
-    svg.setAttribute('width', W);
-    svg.setAttribute('height', totalHeight);
-    svg.style.width = '100%';
-    svg.style.height = totalHeight + 'px';
-    svg.style.position = 'absolute';
-    svg.style.top = '0';
-    svg.style.left = '0';
-    svg.style.pointerEvents = 'none';
+  // ── Catmull-Rom spline ──
+  function catmullRomPoints(pts, tension = 0.5, segments = 120) {
+    const result = [];
+    for (let i = 0; i < pts.length - 1; i++) {
+      const p0 = pts[Math.max(i - 1, 0)];
+      const p1 = pts[i];
+      const p2 = pts[i + 1];
+      const p3 = pts[Math.min(i + 2, pts.length - 1)];
 
-    const centers = [];
+      for (let t = 0; t < segments; t++) {
+        const s = t / segments;
+        const s2 = s * s, s3 = s2 * s;
 
-    cards.forEach((card, i) => {
-        const isLeft = i % 2 === 0;
-        const yPos = i * (cardH + verticalGap) + 40;
+        const x = 0.5 * (
+          (2 * p1.x) +
+          (-p0.x + p2.x) * s +
+          (2*p0.x - 5*p1.x + 4*p2.x - p3.x) * s2 +
+          (-p0.x + 3*p1.x - 3*p2.x + p3.x) * s3
+        );
+        const y = 0.5 * (
+          (2 * p1.y) +
+          (-p0.y + p2.y) * s +
+          (2*p0.y - 5*p1.y + 4*p2.y - p3.y) * s2 +
+          (-p0.y + 3*p1.y - 3*p2.y + p3.y) * s3
+        );
+        result.push({ x, y });
+      }
+    }
+    return result;
+  }
 
-        card.style.position = 'absolute';
-        card.style.top = yPos + 'px';
-        card.style.width = cardW + 'px';
-        card.style.maxWidth = cardW + 'px';
-        card.style.zIndex = '2';
+  function getNormal(pts, i) {
+    const prev = pts[Math.max(i - 1, 0)];
+    const next = pts[Math.min(i + 1, pts.length - 1)];
+    const dx = next.x - prev.x;
+    const dy = next.y - prev.y;
+    const len = Math.sqrt(dx*dx + dy*dy) || 1;
+    return { x: -dy / len, y: dx / len };
+  }
 
-        // Truly flush — left card at x=0, right card at x=W/2
-        const margin = W * 0.08;
-        const cardWidth = W * 0.42;
-        card.style.width = cardWidth + 'px';
-        card.style.maxWidth = cardWidth + 'px';
-        card.style.borderRadius = '1.5rem';
-        card.style.boxSizing = 'border-box';
-        card.style.overflow = 'hidden';
+  let scrollProgress = 0;
+  function updateScroll() {
+    const rect = scene.getBoundingClientRect();
+    const start = window.innerHeight;
+    const end   = -(rect.height);
+    const raw   = (start - rect.top) / (start - end);
+    scrollProgress = Math.max(0, Math.min(1, raw));
+    draw();
+  }
 
-        if (isLeft) {
-            card.style.left = margin + 'px';
-            card.style.right = 'auto';
-        } else {
-            card.style.left = 'auto';
-            card.style.right = margin + 'px';
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+
+    const waypts = getWaypoints();
+    const pts    = catmullRomPoints(waypts, 0.5, 80);
+    if (pts.length < 2) return;
+
+    const roadW    = Math.max(60, Math.min(90, W * 0.07));
+    const visible  = Math.floor(pts.length * scrollProgress);
+    const drawPts  = pts.slice(0, Math.max(visible, 2));
+
+    // Road shadow
+    ctx.save();
+    ctx.strokeStyle = 'rgba(250,204,21,0.04)';
+    ctx.lineWidth = roadW + 30;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.filter = 'blur(18px)';
+    tracePath(ctx, drawPts);
+    ctx.stroke();
+    ctx.filter = 'none';
+    ctx.restore();
+
+    // Road outer edge
+    ctx.save();
+    ctx.strokeStyle = '#555';
+    ctx.lineWidth = roadW + 8;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    tracePath(ctx, drawPts);
+    ctx.stroke();
+    ctx.restore();
+
+    // Road surface
+    ctx.save();
+    ctx.strokeStyle = '#1c1c1c';
+    ctx.lineWidth = roadW;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    tracePath(ctx, drawPts);
+    ctx.stroke();
+    ctx.restore();
+
+    // Edge lines
+    drawEdgeLine(ctx, drawPts, roadW * 0.48, 'rgba(255,255,255,0.35)', 2);
+    drawEdgeLine(ctx, drawPts, -roadW * 0.48, 'rgba(255,255,255,0.35)', 2);
+
+    // Dashed center
+    drawDashedCenter(ctx, drawPts, scrollProgress);
+
+    // Leading glow
+    if (visible > 5 && visible < pts.length) {
+      const tip = drawPts[drawPts.length - 1];
+      const grd = ctx.createRadialGradient(tip.x, tip.y, 0, tip.x, tip.y, roadW * 1.2);
+      grd.addColorStop(0, 'rgba(250,204,21,0.7)');
+      grd.addColorStop(0.4, 'rgba(250,204,21,0.2)');
+      grd.addColorStop(1, 'transparent');
+      ctx.save();
+      ctx.fillStyle = grd;
+      ctx.beginPath();
+      ctx.arc(tip.x, tip.y, roadW * 1.2, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+  }
+
+  function tracePath(ctx, pts) {
+    ctx.beginPath();
+    ctx.moveTo(pts[0].x, pts[0].y);
+    for (let i = 1; i < pts.length - 2; i++) {
+      const mx = (pts[i].x + pts[i+1].x) * 0.5;
+      const my = (pts[i].y + pts[i+1].y) * 0.5;
+      ctx.quadraticCurveTo(pts[i].x, pts[i].y, mx, my);
+    }
+    const l = pts.length;
+    ctx.quadraticCurveTo(pts[l-2].x, pts[l-2].y, pts[l-1].x, pts[l-1].y);
+  }
+
+  function drawEdgeLine(ctx, pts, offset, color, width) {
+    if (pts.length < 2) return;
+    ctx.save();
+    ctx.strokeStyle = color;
+    ctx.lineWidth = width;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.beginPath();
+    for (let i = 0; i < pts.length; i++) {
+      const n = getNormal(pts, i);
+      const x = pts[i].x + n.x * offset;
+      const y = pts[i].y + n.y * offset;
+      if (i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  function drawDashedCenter(ctx, pts, progress) {
+    if (pts.length < 2) return;
+    const dashLen = 22;
+    const gapLen  = 16;
+    let drawing = true;
+    let dashLeft = dashLen;
+
+    ctx.save();
+    ctx.strokeStyle = 'rgba(250,204,21,0.85)';
+    ctx.lineWidth = 2.5;
+    ctx.lineCap = 'round';
+
+    for (let i = 1; i < pts.length; i++) {
+      const dx = pts[i].x - pts[i-1].x;
+      const dy = pts[i].y - pts[i-1].y;
+      const segLen = Math.sqrt(dx*dx + dy*dy);
+      let traveled = 0;
+
+      while (traveled < segLen) {
+        const remaining = segLen - traveled;
+        const step = Math.min(dashLeft, remaining);
+        const t0 = traveled / segLen;
+        const t1 = (traveled + step) / segLen;
+
+        if (drawing) {
+          ctx.beginPath();
+          ctx.moveTo(pts[i-1].x + dx * t0, pts[i-1].y + dy * t0);
+          ctx.lineTo(pts[i-1].x + dx * t1, pts[i-1].y + dy * t1);
+          ctx.stroke();
         }
 
-       const connectX = isLeft ? W * 0.08 : W * 0.92;
-        const connectY = yPos + cardH / 2;
-        centers.push({ x: connectX, y: connectY, isLeft });
-    });
+        traveled  += step;
+        dashLeft  -= step;
 
-    let d = `M ${centers[0].x} ${centers[0].y}`;
-
-    for (let i = 0; i < centers.length - 1; i++) {
-        const curr = centers[i];
-        const next = centers[i + 1];
-        const gap = next.y - curr.y;
-
-        const cp1x = curr.isLeft ? W * 0.4 : W * 0.6;
-        const cp1y = curr.y + gap * 0.35;
-
-        const cp2x = next.isLeft ? W * 0.4 : W * 0.6;
-        const cp2y = next.y - gap * 0.35;
-
-        d += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${next.x} ${next.y}`;
+        if (dashLeft <= 0) {
+          drawing  = !drawing;
+          dashLeft = drawing ? dashLen : gapLen;
+        }
+      }
     }
+    ctx.restore();
+  }
 
-    const allPaths = ['roadPath', 'roadPathEdge', 'roadPathLeft', 'roadPathRight', 'roadPathDash'];
-    allPaths.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.setAttribute('d', d);
-    });
+  window.addEventListener('scroll', updateScroll, { passive: true });
+  window.addEventListener('resize', debounce(() => { resize(); updateScroll(); }, 150));
 
-    pathLength = path.getTotalLength();
+  setTimeout(() => {
+    resize();
+    updateScroll();
+  }, 400);
 
-    // Main road draws on scroll
-    path.style.strokeDasharray = pathLength;
-    path.style.strokeDashoffset = pathLength;
+  window.addEventListener('load', () => {
+    setTimeout(() => { resize(); updateScroll(); }, 200);
+  });
 
-    // Edge draws instantly behind road
-    const edgeEl = document.getElementById('roadPathEdge');
-    if (edgeEl) {
-        edgeEl.style.strokeDasharray = 'none';
-        edgeEl.style.strokeDashoffset = '0';
-    }
-
-    // Center dashes always visible
-    const dashEl = document.getElementById('roadPathDash');
-    if (dashEl) {
-        dashEl.style.strokeDashoffset = '0';
-    }
-}
-
- function updateOnScroll() {
- const rect = container.getBoundingClientRect();
- const vh = window.innerHeight;
- const start = vh - rect.top;
- const total = rect.height + vh;
- let progress = start / total;
- progress = Math.max(0, Math.min(1, progress));
-
- const offset = pathLength * (1 - progress);
- path.style.strokeDashoffset = offset;
- }
-
- buildPath();
- updateOnScroll();
-
- window.addEventListener('resize', debounce(() => { buildPath(); updateOnScroll(); }, 200));
- window.addEventListener('scroll', rafThrottle(updateOnScroll), { passive: true });
-}
-
-window.addEventListener('load', () => setTimeout(initCommitteeRoad, 300));
-document.addEventListener('DOMContentLoaded', () => setTimeout(initCommitteeRoad, 500));
+})();
 
 // ==================== TOAST NOTIFICATION SYSTEM ====================
 function showToast(message, type = 'info') {

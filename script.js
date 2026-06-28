@@ -490,6 +490,8 @@ if (!isMobile) {
   function getWaypoints() {
     const stops = document.querySelectorAll('.hw-stop');
     const pts = [];
+
+    // Start top-center
     pts.push({ x: W * 0.5, y: -50 });
 
     stops.forEach((stop, i) => {
@@ -497,10 +499,16 @@ if (!isMobile) {
       const sceneRect = scene.getBoundingClientRect();
       const cy = rect.top - sceneRect.top + rect.height * 0.5;
       const isLeft = stop.classList.contains('hw-stop--left');
-      const roadX = isLeft ? W * 0.62 : W * 0.38;
+
+      // road curves TOWARD the card side
+      const roadX = isLeft
+        ? W * 0.38   // card on left → road shifts LEFT (toward card)
+        : W * 0.62;  // card on right → road shifts RIGHT (toward card)
+
       pts.push({ x: roadX, y: cy });
     });
 
+    // End bottom-center
     pts.push({ x: W * 0.5, y: H + 50 });
     return pts;
   }

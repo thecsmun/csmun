@@ -303,6 +303,7 @@ h1, h2, h3, h4 {
 }
 
 @media (max-width: 768px) {
+    .nav-pill { display: none; }
     .hamburger {
         display: flex;
     }
@@ -634,6 +635,7 @@ padding-top: 80px;
     align-items: center;
     justify-content: center;
     animation: fadeInUp 0.8s ease both;
+    animation-play-state: paused;
 }
 
 #glbModelContainer {
@@ -783,9 +785,11 @@ padding-top: 80px;
 }
 .hero-tagline p:first-child {
     animation: fadeInUp 0.8s ease 0.3s both;
+    animation-play-state: paused;
 }
 .hero-tagline p:last-child {
     animation: fadeInUp 0.8s ease 0.6s both;
+    animation-play-state: paused;
 }
 
 .hero-subtitle-bottom {
@@ -796,6 +800,7 @@ padding-top: 80px;
     font-size: 1rem;
     opacity: 0.8;
     animation: fadeInUp 0.8s ease 0.9s both;
+    animation-play-state: paused;
 }
 
 .hero-buttons {
@@ -805,6 +810,7 @@ padding-top: 80px;
     justify-content: center;
     flex-wrap: wrap;
     animation: fadeInUp 0.8s ease 1.2s both;
+    animation-play-state: paused;
 }
 
 /* ==================== GLASS CARD ==================== */
@@ -4766,7 +4772,6 @@ body.keyboard-nav *:focus {
   text-align: center;
   gap: 0.6rem;
   position: relative;
-  overflow: hidden;
   box-shadow:
     0 0 0 1px rgba(250,204,21,0.06) inset,
     0 20px 60px rgba(0,0,0,0.6),

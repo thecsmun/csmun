@@ -363,24 +363,19 @@ if (!document.getElementById('rippleStyle')) {
 
 // ---- Preloader ----
 function heroEntrance() {
-  const els = [
-    document.querySelector('.hero-3d-model'),
-    document.querySelector('.hero-title'),
-    document.querySelector('.hero-tagline'),
-    document.querySelector('.hero-subtitle-bottom'),
-    document.querySelector('.hero-buttons'),
+  const queue = [
+    { sel: '.hero-3d-model',         delay: 200 },
+    { sel: '.hero-title',             delay: 350 },
+    { sel: '.hero-tagline',           delay: 500 },
+    { sel: '.hero-subtitle-bottom',   delay: 650 },
+    { sel: '.hero-buttons',           delay: 800 },
   ];
-
-  els.forEach((el, i) => {
-    if (!el) return;
-    el.style.opacity = '0';
-    el.style.transform = 'translateY(30px)';
-    el.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
-
+  queue.forEach(({ sel, delay }) => {
     setTimeout(() => {
-      el.style.opacity = '1';
-      el.style.transform = 'translateY(0)';
-    }, 200 + i * 150);
+      document.querySelectorAll(sel).forEach(el => {
+        el.style.animationPlayState = 'running';
+      });
+    }, delay);
   });
 }
 
@@ -812,9 +807,16 @@ if (!isMobile) {
   `;
   document.body.appendChild(spotlight);
 
+  let ticking = false;
   document.addEventListener('mousemove', (e) => {
-    spotlight.style.left = e.clientX + 'px';
-    spotlight.style.top  = e.clientY + 'px';
+    if (!ticking) {
+      ticking = true;
+      requestAnimationFrame(() => {
+        spotlight.style.left = e.clientX + 'px';
+        spotlight.style.top  = e.clientY + 'px';
+        ticking = false;
+      });
+    }
   });
 
   document.addEventListener('mouseleave', () => {
@@ -867,7 +869,7 @@ if (!isMobile) {
   }
 
   lb.addEventListener('click', close);
-  lb.querySelector('#lbClose').addEventListener('click', close);
+  lb.querySelector('#lbClose').addEventListener('click', (e) => { e.stopPropagation(); close(); });
   document.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
 })();
 
@@ -899,6 +901,7 @@ if (!isMobile) {
 
 // ==================== NAV PILL ====================
 (function initNavPill() {
+  if (window.innerWidth <= 768) return;
   const links = document.querySelector('.nav-links');
   if (!links) return;
 

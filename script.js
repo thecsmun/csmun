@@ -988,14 +988,15 @@ function showToast(message, type = 'info') {
 document.querySelectorAll('a:not([target="_blank"])').forEach(link => {
     link.addEventListener('click', function(e) {
         if (this.closest('.gallery-item')) return;
+        if (this.closest('#galleryLightbox')) return;
         const href = this.getAttribute('href');
-        if (href && !href.startsWith('#') && !href.startsWith('mailto:') && !href.startsWith('tel:')) {
-            e.preventDefault();
-            const overlay = document.createElement('div');
-            overlay.className = 'page-transition active';
-            document.body.appendChild(overlay);
-            setTimeout(() => { window.location.href = href; }, 500);
-        }
+        if (!href) return;
+        if (href.startsWith('#') || href.startsWith('mailto:') || href.startsWith('tel:')) return;
+        e.preventDefault();
+        const overlay = document.createElement('div');
+        overlay.className = 'page-transition active';
+        document.body.appendChild(overlay);
+        setTimeout(() => { window.location.href = href; }, 500);
     });
 });
 
@@ -1270,7 +1271,10 @@ if (enterBtn) {
         });
     });
 })();// ==================== FIX INFINITE SCROLL ====================
-(function fixOverflow() {
+// Remove any stuck page transition overlays on load
+window.addEventListener('load', () => {
+    document.querySelectorAll('.page-transition').forEach(el => el.remove());
+});
     document.documentElement.style.overflowX = 'hidden';
     document.body.style.overflowX = 'hidden';
     document.body.style.maxWidth = '100vw';
@@ -1283,4 +1287,3 @@ if (enterBtn) {
             document.body.style.overflowX = 'hidden';
         }, 500);
     });
-})();

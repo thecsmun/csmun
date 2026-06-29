@@ -984,21 +984,7 @@ function showToast(message, type = 'info') {
     }, 4000);
 }
 
-// ==================== PAGE TRANSITION EFFECT ====================
-document.querySelectorAll('a:not([target="_blank"])').forEach(link => {
-    link.addEventListener('click', function(e) {
-        if (this.closest('.gallery-item')) return;
-        if (this.closest('#galleryLightbox')) return;
-        const href = this.getAttribute('href');
-        if (!href) return;
-        if (href.startsWith('#') || href.startsWith('mailto:') || href.startsWith('tel:')) return;
-        e.preventDefault();
-        const overlay = document.createElement('div');
-        overlay.className = 'page-transition active';
-        document.body.appendChild(overlay);
-        setTimeout(() => { window.location.href = href; }, 500);
-    });
-});
+// PAGE TRANSITION DISABLED - was causing black screen on GitHub Pages
 
 // ==================== TOUCH SWIPE GESTURES ====================
 let touchStartX = 0;

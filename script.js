@@ -388,12 +388,14 @@ if (preloader) {
     function hidePreloader() {
         if (preloader.classList.contains('hidden')) return;
         preloader.classList.add('hidden');
-        setTimeout(() => { preloader.style.display = 'none'; }, 700);
+        preloader.style.display = 'none';
         setTimeout(initTypewriter, 800);
-        setTimeout(heroEntrance, 2400);
+        setTimeout(heroEntrance, 400);
     }
-    setTimeout(hidePreloader, 2200);
+    // Force hide after 1 second no matter what
+    setTimeout(hidePreloader, 1000);
     window.addEventListener('load', hidePreloader);
+    document.addEventListener('DOMContentLoaded', () => setTimeout(hidePreloader, 500));
 }
 
 

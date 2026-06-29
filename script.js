@@ -857,7 +857,10 @@ if (!isMobile) {
     item.style.cursor = 'zoom-in';
     item.addEventListener('click', () => {
       const img = item.querySelector('img');
-      lbImg.src = img.src;
+      const src = img.getAttribute('data-src') || img.src;
+      if (!src) return;
+      lbImg.src = '';
+      lbImg.src = src;
       lb.style.display = 'flex';
       document.body.style.overflow = 'hidden';
     });
@@ -960,6 +963,7 @@ function showToast(message, type = 'info') {
 // ==================== PAGE TRANSITION EFFECT ====================
 document.querySelectorAll('a:not([target="_blank"])').forEach(link => {
     link.addEventListener('click', function(e) {
+        if (this.closest('.gallery-item')) return;
         const href = this.getAttribute('href');
         if (href && !href.startsWith('#') && !href.startsWith('mailto:') && !href.startsWith('tel:')) {
             e.preventDefault();

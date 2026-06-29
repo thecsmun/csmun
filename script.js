@@ -870,10 +870,19 @@ if (!isMobile) {
 
   items.forEach(item => {
     item.style.cursor = 'zoom-in';
+    // Remove any existing pointer-events blocking
+    item.style.pointerEvents = 'all';
+    const overlay = item.querySelector('.gallery-overlay');
+    if (overlay) overlay.style.pointerEvents = 'none';
+
     item.addEventListener('click', function(e) {
       e.stopPropagation();
+      e.preventDefault();
       const img = item.querySelector('img');
-      if (img && img.src) openLightbox(img.src);
+      if (!img) return;
+      // Force get the real src
+      const src = img.currentSrc || img.src || img.getAttribute('src');
+      if (src) openLightbox(src);
     });
   });
 

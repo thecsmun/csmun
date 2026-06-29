@@ -3763,8 +3763,7 @@ body.keyboard-nav *:focus {
 }
 
 .gallery-item:hover {
-  transform: scale(1.05);
-  box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6);
 }
 
 .gallery-overlay {
@@ -5033,4 +5032,13 @@ body.keyboard-nav *:focus {
   }
   .hw-card__abbr { font-size: 1.4rem; }
   .hw-card__agenda { font-size: 0.7rem; }
+}
+.gallery-item {
+    cursor: zoom-in !important;
+}
+.gallery-item .gallery-overlay {
+    pointer-events: none !important;
+}
+.gallery-item img {
+    pointer-events: none !important;
 }

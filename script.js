@@ -1079,40 +1079,6 @@ if (enterBtn) {
 
   renderSlider();
 
-  var toggleBtn = document.querySelector('.review-toggle-btn');
-  var reviewForm = document.querySelector('.review-form');
-  var submitBtn = document.querySelector('.submit-review');
-
-  if (toggleBtn && reviewForm) {
-    var formVisible = false;
-    toggleBtn.addEventListener('click', function() {
-      formVisible = !formVisible;
-      reviewForm.style.display = formVisible ? 'flex' : 'none';
-      toggleBtn.textContent = formVisible ? 'Cancel' : 'Write a Review';
-    });
-  }
-
-  if (submitBtn) {
-    submitBtn.addEventListener('click', function() {
-      var name = document.getElementById('review-name');
-      var title = document.getElementById('review-title');
-      var text = document.getElementById('review-text');
-      if (!name.value.trim() || !title.value.trim() || !text.value.trim()) {
-        alert('Please fill in all fields.');
-        return;
-      }
-      var reviews = getReviews();
-      reviews.unshift({ name: name.value.trim(), title: title.value.trim(), text: text.value.trim() });
-      saveReviews(reviews);
-      name.value = '';
-      title.value = '';
-      text.value = '';
-      if (reviewForm) reviewForm.style.display = 'none';
-      if (toggleBtn) toggleBtn.textContent = 'Write a Review';
-      formVisible = false;
-      renderSlider();
-    });
-  }
 })();
 
 // ==================== LAZY LOADING IMAGES WITH BLUR-UP ====================

@@ -16,6 +16,7 @@
     --black: #000000;
     --white: #ffffff;
     --gray-200: #e5e7eb;
+    --secretariat-scale: 1.3;
     --gray-300: #d1d5dc;
     --gray-400: #99a1af;
     --gray-500: #6b7280;
@@ -1337,20 +1338,30 @@ img {
     perspective: 800px;
 }
 
-.secretariat-card img {
+.secretariat-img-wrap {
     width: 180px;
     height: 180px;
     border-radius: 50%;
+    overflow: hidden;
     border: 3px solid rgba(250, 204, 21, 0.3);
     margin: 0 auto 1rem;
-    object-fit: cover;
-    transition: all var(--transition-normal);
-    transform: translateZ(0);
+    flex-shrink: 0;
+    transition: border-color var(--transition-normal), box-shadow var(--transition-normal);
 }
-.secretariat-card img:hover {
-    transform: scale(1.08) translateZ(20px);
+.secretariat-img-wrap:hover {
     border-color: var(--gold);
     box-shadow: 0 0 40px rgba(250, 204, 21, 0.5);
+}
+.secretariat-img-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transform: scale(var(--scale, var(--secretariat-scale)));
+    transition: transform var(--transition-normal);
+}
+.secretariat-img-wrap:hover img {
+    transform: scale(calc(var(--scale, var(--secretariat-scale)) * 1.08));
 }
 
 .secretariat-card h3 {
